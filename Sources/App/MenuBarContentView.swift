@@ -6,12 +6,6 @@ struct MenuBarContentView: View {
     @ObservedObject private var daemon = AppDaemon.shared
     @ObservedObject private var pet = PetController.shared
     @ObservedObject private var petWindow = PetWindowController.shared
-    @State private var hookInstalled = ClaudeHookInstaller.isInstalledOnDisk()
-
-    private var hookCommand: String {
-        let path = Bundle.main.executablePath ?? CommandLine.arguments.first ?? "agentpet"
-        return "\"\(path)\" hook"
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -44,14 +38,10 @@ struct MenuBarContentView: View {
 
             Divider()
 
-            Button(hookInstalled ? "Remove Claude Code hook" : "Install Claude Code hook") {
-                if hookInstalled {
-                    try? ClaudeHookInstaller.uninstallFromDisk()
-                } else {
-                    try? ClaudeHookInstaller.installToDisk(command: hookCommand)
-                }
-                hookInstalled = ClaudeHookInstaller.isInstalledOnDisk()
+            Button("Settings...") {
+                SettingsWindowController.shared.show()
             }
+            .keyboardShortcut(",")
 
             Button("Quit AgentPet") {
                 NSApplication.shared.terminate(nil)

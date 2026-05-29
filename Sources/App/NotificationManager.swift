@@ -10,12 +10,10 @@ import UserNotifications
 final class NotificationManager {
     static let shared = NotificationManager()
 
-    private var available: Bool { Bundle.main.bundleIdentifier != nil }
+    /// `UNUserNotificationCenter` needs a real bundle id; false under `swift run`.
+    var isAvailable: Bool { Bundle.main.bundleIdentifier != nil }
 
-    func requestAuthorization() {
-        guard available else { return }
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
-    }
+    private var available: Bool { isAvailable }
 
     func notify(title: String, body: String) {
         guard available else { return }
