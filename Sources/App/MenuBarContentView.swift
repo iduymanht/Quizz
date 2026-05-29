@@ -1,14 +1,24 @@
 import SwiftUI
 import AppKit
+import AgentPetCore
 
 struct MenuBarContentView: View {
+    @ObservedObject private var daemon = AppDaemon.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("AgentPet")
                 .font(.headline)
-            Text("No agents running")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+
+            if daemon.sessions.isEmpty {
+                Text("No agents running")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(daemon.sessions) { session in
+                    SessionRow(session: session)
+                }
+            }
 
             Divider()
 
@@ -18,6 +28,46 @@ struct MenuBarContentView: View {
             .keyboardShortcut("q")
         }
         .padding(12)
-        .frame(width: 240, alignment: .leading)
+        .frame(width: 280, alignment: .leading)
+    }
+}
+
+private struct SessionRow: View {
+    let session: AgentSession
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(session.state.displayColor)
+                .frame(width: 9, height: 9)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(projectName)
+                    .font(.subheadline)
+                Text(session.state.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Text(session.updatedAt, style: .relative)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var projectName: String {
+        guard let project = session.project, !project.isEmpty else { return session.id }
+        return (project as NSString).lastPathComponent
+    }
+}
+
+private extension AgentState {
+    var displayColor: Color {
+        switch self {
+        case .waiting: return .orange
+        case .working: return .blue
+        case .done: return .green
+        case .registered: return .gray
+        case .idle: return .secondary
+        }
     }
 }

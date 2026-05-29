@@ -12,10 +12,11 @@ struct AgentPetApp: App {
     }
 }
 
-/// Runs the app as a menu bar accessory (no Dock icon), replacing the
-/// LSUIElement Info.plist key that a bare SwiftPM executable lacks.
+/// Runs the app as a menu bar accessory (no Dock icon) and boots the daemon.
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        AppDaemon.shared.start()
     }
 }
