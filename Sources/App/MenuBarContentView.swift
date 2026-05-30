@@ -97,7 +97,11 @@ struct MenuContentView: View {
         HStack {
             FooterButton(icon: "gearshape", label: "Settings") {
                 dismiss()
-                SettingsWindowController.shared.show()
+                // Open after the popover finishes closing so the window
+                // reliably comes to the front.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    SettingsWindowController.shared.show()
+                }
             }
             Spacer()
             FooterButton(icon: "power", label: "Quit") {
