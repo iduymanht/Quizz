@@ -1,4 +1,11 @@
 import SwiftUI
+import AppKit
+
+extension Color {
+    /// The real system accent color, which (unlike `Color.accentColor`) does
+    /// not dim to gray when the window is not key.
+    static var systemAccent: Color { Color(nsColor: .controlAccentColor) }
+}
 
 /// Petdex-inspired dark navy / indigo theme for the Settings window.
 enum Theme {

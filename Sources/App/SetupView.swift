@@ -59,10 +59,10 @@ private struct TabButton: View {
             }
             .frame(width: 78, height: 48)
             .background(RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(selected ? Color.accentColor.opacity(0.22) : .clear))
+                .fill(selected ? Color.systemAccent.opacity(0.22) : .clear))
             .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .strokeBorder(selected ? Color.accentColor.opacity(0.55) : .clear, lineWidth: 1))
-            .foregroundStyle(selected ? Color.accentColor : Color.primary)
+                .strokeBorder(selected ? Color.systemAccent.opacity(0.55) : .clear, lineWidth: 1))
+            .foregroundStyle(selected ? Color.systemAccent : Color.primary)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -86,7 +86,7 @@ private struct GeneralTab: View {
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
-                .tint(.green)
+                .tint(Color.systemAccent)
             }
 
             Section("Notifications") {
@@ -102,7 +102,7 @@ private struct GeneralTab: View {
 
             Section("Pet chat") {
                 Toggle("Show chat bubble", isOn: $pet.showChat)
-                    .tint(.green)
+                    .tint(Color.systemAccent)
                 Picker("Messages", selection: $chat.source) {
                     Text("System").tag(ChatSettings.Source.system)
                     Text("Custom").tag(ChatSettings.Source.custom)
@@ -301,8 +301,8 @@ private struct PetThumb: View {
                 Text(pack.displayName).font(.caption).lineLimit(1).frame(width: 64)
             }
             .padding(6)
-            .background(RoundedRectangle(cornerRadius: 10).fill(selected ? Color.accentColor.opacity(0.2) : .clear))
-            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(selected ? Color.accentColor : .secondary.opacity(0.3), lineWidth: selected ? 2 : 1))
+            .background(RoundedRectangle(cornerRadius: 10).fill(selected ? Color.systemAccent.opacity(0.2) : .clear))
+            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(selected ? Color.systemAccent : .secondary.opacity(0.3), lineWidth: selected ? 2 : 1))
         }
         .buttonStyle(.plain)
     }
@@ -334,8 +334,8 @@ private struct AnimationPicker: View {
                         Text("Clip \(i + 1)").font(.caption2).foregroundStyle(.secondary)
                     }
                     .padding(5)
-                    .background(RoundedRectangle(cornerRadius: 9).fill(i == current ? Color.accentColor.opacity(0.2) : .clear))
-                    .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(i == current ? Color.accentColor : .secondary.opacity(0.25), lineWidth: i == current ? 2 : 1))
+                    .background(RoundedRectangle(cornerRadius: 9).fill(i == current ? Color.systemAccent.opacity(0.2) : .clear))
+                    .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(i == current ? Color.systemAccent : .secondary.opacity(0.25), lineWidth: i == current ? 2 : 1))
                 }
                 .buttonStyle(.plain)
             }

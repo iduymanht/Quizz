@@ -103,7 +103,7 @@ struct MenuContentView: View {
                 .labelsHidden()
                 .toggleStyle(.switch)
                 .controlSize(.small)
-                .tint(.green)
+                .tint(Color.systemAccent)
         }
         .padding(.horizontal, 14).padding(.vertical, 9)
     }
