@@ -126,8 +126,13 @@ private struct GeneralTab: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    Text("One message per line; a random one is shown.")
-                        .font(.caption).foregroundStyle(.secondary)
+                    HStack {
+                        Text("One message per line; a random one is shown.")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Reset to defaults") { chat.resetToDefaults() }
+                            .controlSize(.small)
+                    }
                 }
             }
 

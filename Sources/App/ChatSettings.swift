@@ -56,6 +56,15 @@ final class ChatSettings: ObservableObject {
             .map { String($0) }
     }
 
+    /// Refills the custom messages with the app's built-in defaults.
+    func resetToDefaults() {
+        var updated = custom
+        for mood in Self.editableMoods {
+            updated[mood.rawValue] = PetChat.lines[mood] ?? []
+        }
+        custom = updated
+    }
+
     private func save() {
         if let data = try? JSONEncoder().encode(custom) {
             UserDefaults.standard.set(data, forKey: Self.customKey)
