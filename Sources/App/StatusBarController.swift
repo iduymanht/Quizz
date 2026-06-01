@@ -87,14 +87,11 @@ final class StatusBarController: NSObject, ObservableObject {
         refreshChatBubble()
     }
 
-    private static let pawConfig = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-
     /// Builds the menu bar image: the paw alone, or the paw plus a count laid out
     /// as a centered row (both centered vertically by their bounding boxes, so the
     /// digit never sits high or low relative to the icon).
     private static func menuBarImage(count: Int?, waiting: Bool) -> NSImage? {
-        guard let paw = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentPet")?
-            .withSymbolConfiguration(pawConfig) else { return nil }
+        guard let paw = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentPet") else { return nil }
 
         guard let count else {
             paw.isTemplate = true
