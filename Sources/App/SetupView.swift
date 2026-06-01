@@ -377,9 +377,10 @@ private struct PetTab: View {
                             Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                             TextField("Search your pets", text: $petQuery)
                                 .textFieldStyle(.plain)
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                        .padding(8)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary))
+                        .contentShape(Rectangle())
                     }
                     PetPager(packs: filteredPacks, selectedID: pet.selectedPetID,
                              onSelect: { pet.selectedPetID = $0 },
