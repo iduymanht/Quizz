@@ -8,6 +8,7 @@ struct ImagePetPack: Identifiable {
     let displayName: String
     let description: String?
     let clips: [[NSImage]]
+    let directory: URL
 
     var clipCount: Int { clips.count }
 
@@ -43,7 +44,7 @@ enum SpriteSlicer {
         }
         guard !clips.isEmpty else { return nil }
         return ImagePetPack(id: manifest.id, displayName: manifest.displayName,
-                            description: manifest.description, clips: clips)
+                            description: manifest.description, clips: clips, directory: directory)
     }
 
     /// Slices a spritesheet into clips (one per sheet row) using alpha gutter

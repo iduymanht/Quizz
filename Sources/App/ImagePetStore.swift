@@ -16,6 +16,12 @@ final class ImagePetStore: ObservableObject {
         packs.first { $0.id == id }
     }
 
+    /// Deletes an installed pet's folder from disk and reloads.
+    func delete(_ pack: ImagePetPack) {
+        try? FileManager.default.removeItem(at: pack.directory)
+        reload()
+    }
+
     func reload() {
         let fm = FileManager.default
         guard let entries = try? fm.contentsOfDirectory(

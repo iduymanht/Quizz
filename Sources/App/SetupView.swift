@@ -330,7 +330,13 @@ private struct PetTab: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    PetPager(packs: filteredPacks, selectedID: pet.selectedPetID) { pet.selectedPetID = $0 }
+                    PetPager(packs: filteredPacks, selectedID: pet.selectedPetID,
+                             onSelect: { pet.selectedPetID = $0 },
+                             onDelete: { pack in
+                                 let wasSelected = pet.selectedPetID == pack.id
+                                 imagePets.delete(pack)
+                                 if wasSelected { pet.selectedPetID = imagePets.packs.first?.id }
+                             })
                 }
                 Button { browsing = true } label: {
                     Label("Browse pets…", systemImage: "square.grid.2x2")
@@ -397,6 +403,7 @@ private struct PetPager: View {
     let packs: [ImagePetPack]
     let selectedID: String?
     let onSelect: (String) -> Void
+    let onDelete: (ImagePetPack) -> Void
     @State private var page = 0
 
     private let perPage = 8
@@ -441,7 +448,9 @@ private struct PetPager: View {
         return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
                          alignment: .leading, spacing: 12) {
             ForEach(slice) { pack in
-                PetThumb(pack: pack, selected: selectedID == pack.id) { onSelect(pack.id) }
+                PetThumb(pack: pack, selected: selectedID == pack.id,
+                         select: { onSelect(pack.id) },
+                         onDelete: { onDelete(pack) })
             }
         }
     }
@@ -462,6 +471,8 @@ private struct PetThumb: View {
     let pack: ImagePetPack
     let selected: Bool
     let select: () -> Void
+    var onDelete: (() -> Void)? = nil
+    @State private var hovering = false
 
     var body: some View {
         Button(action: select) {
@@ -476,6 +487,18 @@ private struct PetThumb: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .overlay(alignment: .topTrailing) {
+            if hovering, let onDelete {
+                Button(action: onDelete) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(.white, .black.opacity(0.55))
+                }
+                .buttonStyle(.plain)
+                .offset(x: 4, y: -4)
+            }
+        }
+        .onHover { hovering = $0 }
     }
 }
 
@@ -483,6 +506,7 @@ private struct AnimationPicker: View {
     let pack: ImagePetPack
     @ObservedObject private var store = PetBindingsStore.shared
     @State private var state: PetMood = .working
+    @State private var hoveredClip: Int?
 
     private let states: [PetMood] = [.idle, .working, .waiting, .done, .celebrate]
 
@@ -493,6 +517,9 @@ private struct AnimationPicker: View {
         .pickerStyle(.segmented)
         .labelsHidden()
 
+        Text("Hover a clip to preview it.")
+            .font(.caption2).foregroundStyle(.secondary)
+
         let current = store.clipIndex(packId: pack.id, clipCount: pack.clipCount, mood: state)
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 10)], spacing: 10) {
             ForEach(0..<pack.clipCount, id: \.self) { i in
@@ -500,8 +527,14 @@ private struct AnimationPicker: View {
                     store.setClip(i, mood: state, packId: pack.id, clipCount: pack.clipCount)
                 } label: {
                     VStack(spacing: 3) {
-                        StaticFrame(image: pack.clip(i).first, size: 44)
-                            .frame(width: 54, height: 44)
+                        Group {
+                            if hoveredClip == i {
+                                ImageSpriteView(frames: pack.clip(i), mood: .working, size: 44)
+                            } else {
+                                StaticFrame(image: pack.clip(i).first, size: 44)
+                            }
+                        }
+                        .frame(width: 54, height: 44)
                         Text("Clip \(i + 1)").font(.caption2).foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity)
@@ -511,6 +544,7 @@ private struct AnimationPicker: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .onHover { hoveredClip = $0 ? i : (hoveredClip == i ? nil : hoveredClip) }
             }
         }
         .padding(.vertical, 4)
