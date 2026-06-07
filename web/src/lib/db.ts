@@ -25,8 +25,31 @@ export async function ensureSchema(db: any): Promise<void> {
     db.prepare("CREATE INDEX IF NOT EXISTS idx_pet_likes_user ON pet_likes (user_id)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pet_stats (slug TEXT PRIMARY KEY, likes INTEGER NOT NULL DEFAULT 0)"),
     db.prepare("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, login TEXT, avatar TEXT, updated_at INTEGER NOT NULL DEFAULT 0)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS pet_overrides (slug TEXT PRIMARY KEY, kind TEXT, hidden INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)"),
   ]);
   ready = true;
+}
+
+// All admin overrides as a map (small table: only edited/hidden pets have rows).
+export async function getOverrides(db: any): Promise<Record<string, { kind?: string; hidden?: boolean }>> {
+  if (!db) return {};
+  const r: any = await db.prepare("SELECT slug, kind, hidden FROM pet_overrides").all();
+  const map: Record<string, { kind?: string; hidden?: boolean }> = {};
+  for (const row of r?.results ?? []) map[row.slug] = { kind: row.kind || undefined, hidden: !!row.hidden };
+  return map;
+}
+
+// Upsert an override, merging with the existing row so a partial patch (kind OR
+// hidden) leaves the other field untouched.
+export async function patchOverride(db: any, slug: string, patch: { kind?: string; hidden?: boolean }): Promise<{ kind: string | null; hidden: boolean }> {
+  const cur: any = await db.prepare("SELECT kind, hidden FROM pet_overrides WHERE slug=?").bind(slug).first();
+  const kind = patch.kind !== undefined ? (patch.kind || null) : (cur?.kind ?? null);
+  const hidden = patch.hidden !== undefined ? (patch.hidden ? 1 : 0) : (cur?.hidden ?? 0);
+  await db
+    .prepare("INSERT INTO pet_overrides (slug, kind, hidden, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(slug) DO UPDATE SET kind=excluded.kind, hidden=excluded.hidden, updated_at=excluded.updated_at")
+    .bind(slug, kind, hidden, Date.now())
+    .run();
+  return { kind, hidden: !!hidden };
 }
 
 // Upsert the signed-in user's public profile so leaderboards can show login + avatar.
