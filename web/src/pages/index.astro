@@ -4,7 +4,7 @@ import Icon from "../components/Icon.astro";
 import PetCard from "../components/PetCard.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import { loadManifest, applyOverrides, petsBase } from "../lib/pets";
-import { getDB, ensureSchema, getOverrides, approvedCommunityPets, getNumbers, listCollections } from "../lib/db";
+import { getDB, ensureSchema, getOverrides, approvedCommunityPets, getNumbers, listCollections, getColors } from "../lib/db";
 
 // Rendered per request (no-store) so the home reshuffles on every reload and
 // reflects admin edits live. Sprites go through our same-origin proxy
@@ -21,9 +21,19 @@ let ovr = {};
 let community: any[] = [];
 let nums: Record<string, number> = {};
 let collections: any[] = [];
-if (db) { await ensureSchema(db); ovr = await getOverrides(db); community = await approvedCommunityPets(db); nums = await getNumbers(db); collections = await listCollections(db); }
+let colorsMap: Record<string, string> = {};
+if (db) { await ensureSchema(db); ovr = await getOverrides(db); community = await approvedCommunityPets(db); nums = await getNumbers(db); collections = await listCollections(db); colorsMap = await getColors(db); }
 const collectionPreview = collections.filter((c) => c.count > 0).slice(0, 6);
 const allPets = applyOverrides([...community, ...manifest], ovr);
+
+// Facets for the home quick-browse (link into the gallery with ?kind / ?color).
+const KIND_FACETS = ["character", "creature", "asian", "western", "object"];
+const COLOR_FACETS = ["red", "orange", "yellow", "green", "teal", "blue", "purple", "pink", "brown"];
+const COLOR_HEX: Record<string, string> = { red: "#f43f5e", orange: "#fb923c", yellow: "#eab308", green: "#22c55e", teal: "#14b8a6", blue: "#3b76f6", purple: "#a855f7", pink: "#ec4899", brown: "#a16207" };
+const kindCounts: Record<string, number> = {};
+for (const p of allPets) kindCounts[p.kind] = (kindCounts[p.kind] || 0) + 1;
+const colorCounts: Record<string, number> = {};
+for (const c of Object.values(colorsMap)) colorCounts[c] = (colorCounts[c] || 0) + 1;
 const petCount = allPets.length || 1100;
 const pets: { slug: string; name: string; kind: string; num: number }[] = allPets.map((p) => ({ slug: p.slug, name: p.name, kind: p.kind, num: nums[p.slug] || 0 }));
 
@@ -182,6 +192,35 @@ const bubblePos = [
           </span>
         ))}
         <a href="/integrations" class="inline-flex items-center rounded-full bg-brand-50 px-4 py-2 font-display text-sm font-semibold text-brand-700 transition hover:bg-brand-100">+ more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK BROWSE FACETS (type + colour, deep-link into the gallery) -->
+  <section class="px-4 pt-12">
+    <div class="mx-auto max-w-6xl">
+      <div class="flex items-end justify-between">
+        <div>
+          <h2 class="font-display text-3xl font-bold text-ink">Find your match</h2>
+          <p class="mt-1 text-muted">Jump straight to a type or a colour.</p>
+        </div>
+        <a href="/gallery" class="hidden items-center gap-1 font-semibold text-brand-600 hover:text-brand-700 sm:flex">Open gallery <Icon name="arrow" class="h-4 w-4" /></a>
+      </div>
+      <div class="mt-5 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="w-12 shrink-0 font-pixel text-[10px] uppercase tracking-wide text-faint">Type</span>
+          {KIND_FACETS.map((k) => (
+            <a href={`/gallery?kind=${k}`} class="chip capitalize !px-3.5 !py-1.5 text-sm">{k} <span class="ml-1 text-faint">{(kindCounts[k] || 0).toLocaleString()}</span></a>
+          ))}
+        </div>
+        {Object.keys(colorCounts).length > 0 && (
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="w-12 shrink-0 font-pixel text-[10px] uppercase tracking-wide text-faint">Color</span>
+            {COLOR_FACETS.map((c) => (
+              <a href={`/gallery?color=${c}`} class="chip capitalize !px-3.5 !py-1.5 text-sm"><span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full align-middle" style={`background:${COLOR_HEX[c]}`}></span>{c} <span class="ml-1 text-faint">{(colorCounts[c] || 0).toLocaleString()}</span></a>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>
