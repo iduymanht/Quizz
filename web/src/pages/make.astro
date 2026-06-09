@@ -8,11 +8,27 @@ const steps = [
   { icon: "sparkles", title: "Add a pet.json", body: "A tiny manifest: id, displayName, and description, packed next to the spritesheet. AgentPet maps each row to a state." },
   { icon: "paw", title: "Share it", body: "Upload your spritesheet on the Submit page. Once approved it joins the gallery, credited to you. The pet-pack format is open; artwork stays with its creator." },
 ];
-const prompt = `Draw a chibi pixel-art desktop pet as ONE transparent PNG spritesheet.
-- Each ROW is an animation (idle, run, jump, wave, waiting), frames left to right.
-- Fully transparent background, clear gaps between every frame, consistent frame size.
-- Character: [describe your pet here].
-Output a single transparent PNG.`;
+const prompt = `Draw a chibi pixel-art character as ONE transparent PNG spritesheet, laid out as a grid I can auto-slice.
+
+Layout: 9 ROWS, top to bottom, ONE animation per row, frames left to right. Use exactly this order:
+1. Idle
+2. Run Right
+3. Run Left (the Run Right frames, mirrored)
+4. Waving
+5. Jumping
+6. Failed (sad / head down)
+7. Waiting
+8. Running
+9. Review (thinking, hand on chin)
+
+Rules:
+- 4 to 8 frames per row. Same character in every frame, centred, with the SAME frame size and scale across the whole sheet.
+- Fully transparent background. Leave a clear transparent gap (a few pixels) between every frame AND between every row, so the frames can be detected automatically.
+- Crisp pixel outlines, no anti-aliased halo or shadow bleeding onto the transparent edges.
+
+Character: [describe your pet here].
+
+Output one single transparent PNG.`;
 ---
 <Base title="Make a pet · AgentPet" description="Create and share your own pixel companion." active="make">
   <Hero
