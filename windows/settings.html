@@ -7,8 +7,20 @@
   </head>
   <body class="settings">
     <h1>AgentPet</h1>
+
+    <h2 class="section">Your pet</h2>
+    <div class="sub">Pick the companion that floats on your desktop.</div>
+    <div id="pet-current" class="pet-current"></div>
+    <div class="pet-controls">
+      <input id="pet-search" type="text" placeholder="Search pets by name..." autocomplete="off" />
+      <button id="pet-random" title="Surprise me">🎲</button>
+    </div>
+    <div id="pet-results" class="pet-results"></div>
+
+    <h2 class="section">Agent integrations</h2>
     <div class="sub">Install a hook so AgentPet can see when an agent works, finishes, or needs you.</div>
     <div id="agents"></div>
+
     <script type="module" src="/src/settings.ts"></script>
   </body>
 </html>

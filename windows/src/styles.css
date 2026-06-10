@@ -51,9 +51,30 @@ body.settings {
   color: #e9ecff;
   padding: 18px;
   font-size: 14px;
+  height: 100vh;
+  overflow-y: auto;
+  cursor: default;
 }
 .settings h1 { font-size: 18px; margin-bottom: 4px; }
-.settings .sub { opacity: 0.6; font-size: 12px; margin-bottom: 16px; }
+.settings h2.section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.7; margin-top: 22px; margin-bottom: 2px; }
+.settings .sub { opacity: 0.6; font-size: 12px; margin-bottom: 12px; }
+
+.pet-current { font-size: 13px; margin-bottom: 8px; color: #9fb4ff; }
+.pet-controls { display: flex; gap: 8px; }
+#pet-search {
+  flex: 1; background: rgba(255,255,255,0.06); color: #e9ecff;
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; padding: 7px 10px; font-size: 13px;
+}
+#pet-random {
+  background: rgba(255,255,255,0.10); border: 0; border-radius: 7px;
+  padding: 7px 11px; cursor: pointer; font-size: 15px;
+}
+.pet-results { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; max-height: 160px; overflow-y: auto; }
+.pet-item {
+  background: rgba(255,255,255,0.08); color: #e9ecff; border: 0; border-radius: 6px;
+  padding: 5px 9px; font-size: 12px; cursor: pointer;
+}
+.pet-item:hover { background: #3b76f6; }
 .agent-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.08);
