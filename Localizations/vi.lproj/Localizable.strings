@@ -211,3 +211,29 @@
 "Waiting for your input" = "Đang chờ bạn nhập";
 "Your turn — over to you" = "Tới lượt bạn";
 "Needs your input" = "Cần bạn nhập";
+
+/* App language picker */
+"Language" = "Ngôn ngữ";
+
+/* App: onboarding, create-pet, browser, menu */
+"A desktop pet that watches your AI coding agents. Two quick steps to get going." = "Thú cưng desktop theo dõi các agent code AI của bạn. Hai bước nhanh để bắt đầu.";
+"Added" = "Đã thêm";
+"Browse pets" = "Duyệt thú cưng";
+"Cancel" = "Hủy";
+"Category" = "Danh mục";
+"Choose image…" = "Chọn ảnh…";
+"Community" = "Cộng đồng";
+"Create" = "Tạo";
+"Create pet" = "Tạo thú cưng";
+"Get alerted when an agent finishes or needs input." = "Được báo khi một agent xong hoặc cần bạn nhập.";
+"Get started" = "Bắt đầu";
+"Install a hook so AgentPet can see when an agent works, finishes, or needs you." = "Cài hook để AgentPet biết khi agent làm việc, hoàn tất, hoặc cần bạn.";
+"Loading pets…" = "Đang tải thú cưng…";
+"Nothing running right now." = "Hiện không có gì đang chạy.";
+"Pet info" = "Thông tin thú cưng";
+"Pet size" = "Kích thước thú cưng";
+"Retry" = "Thử lại";
+"Sort by agent kind" = "Sắp xếp theo loại agent";
+"Spritesheet" = "Spritesheet";
+"Use the same 8×9 transparent spritesheet format as downloaded pets." = "Dùng cùng định dạng spritesheet 8×9 trong suốt như pet tải về.";
+"Welcome to AgentPet" = "Chào mừng đến với AgentPet";
