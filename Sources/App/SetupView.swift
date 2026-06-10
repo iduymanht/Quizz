@@ -233,6 +233,7 @@ private struct GeneralTab: View {
     // Local mirror of the system login-item state so the toggle re-renders
     // reliably (the SMAppService status isn't observable on its own).
     @State private var launchAtLogin = LoginItem.isEnabled
+    @State private var showCodexHelp = false
 
     var body: some View {
         Form {
@@ -293,13 +294,23 @@ private struct GeneralTab: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(agent.displayName)
-                            if let note = agent.note {
+                            if agent.kind == .codex, model.isInstalled(.codex) {
+                                Text("Installed , needs a one-time trust (tap ?)")
+                                    .font(.caption).foregroundStyle(.orange)
+                            } else if let note = agent.note {
                                 Text(note).font(.caption).foregroundStyle(.secondary)
                             } else if model.isInstalled(agent.kind) {
                                 Text("Hook installed").font(.caption).foregroundStyle(.green)
                             }
                         }
                         Spacer()
+                        if agent.kind == .codex {
+                            Button { showCodexHelp = true } label: {
+                                Image(systemName: "questionmark.circle")
+                            }
+                            .buttonStyle(.borderless)
+                            .help("How to connect Codex")
+                        }
                         if agent.isSupported {
                             Button(model.isInstalled(agent.kind) ? "Remove" : "Install") {
                                 model.toggleInstall(agent.kind)
@@ -323,6 +334,7 @@ private struct GeneralTab: View {
             }
         }
         .formStyle(.grouped)
+        .sheet(isPresented: $showCodexHelp) { CodexHelpView() }
     }
 
 
@@ -652,5 +664,67 @@ private struct AnimationPicker: View {
         case .done: return NSLocalizedString("Done", comment: "pet mood")
         case .celebrate: return NSLocalizedString("Celebrate", comment: "pet mood")
         }
+    }
+}
+
+// MARK: - Codex connection help
+
+/// Explains the one-time `/hooks` trust step Codex requires before AgentPet's
+/// hook runs (Codex blocks unknown command hooks for security). Other agents
+/// need no such step.
+private struct CodexHelpView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    private struct Step: Identifiable { let n: Int; let text: String; var id: Int { n } }
+    private let steps: [Step] = [
+        .init(n: 1, text: NSLocalizedString("Open Terminal and run: codex (launches the Codex CLI)", comment: "codex help step")),
+        .init(n: 2, text: NSLocalizedString("Type /hooks and press Enter to list the hooks.", comment: "codex help step")),
+        .init(n: 3, text: NSLocalizedString("Press t to Trust all hooks.", comment: "codex help step")),
+        .init(n: 4, text: NSLocalizedString("Quit and reopen Codex (both the CLI and the desktop app).", comment: "codex help step")),
+        .init(n: 5, text: NSLocalizedString("Run any prompt , your pet now shows the Codex session.", comment: "codex help step")),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 10) {
+                Image(systemName: "checkmark.shield")
+                    .font(.title2).foregroundStyle(.blue)
+                Text("Connect Codex").font(.title3.bold())
+                Spacer()
+            }
+
+            Text("The hook is installed. Codex blocks unknown command hooks until you trust them once , a Codex security feature, not an AgentPet bug. Do this one time:")
+                .font(.callout).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(steps) { s in
+                    HStack(alignment: .top, spacing: 10) {
+                        Text("\(s.n)")
+                            .font(.caption.bold()).foregroundStyle(.white)
+                            .frame(width: 20, height: 20)
+                            .background(Circle().fill(.blue))
+                        Text(s.text)
+                            .font(.callout)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .textSelection(.enabled)
+                    }
+                }
+            }
+
+            Text("Trust is shared, so trusting once in the CLI also covers the Codex desktop app. If /hooks shows nothing, add  [features] hooks = true  to ~/.codex/config.toml, then retry.")
+                .font(.caption).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack {
+                Link("Codex hooks docs", destination: URL(string: "https://developers.openai.com/codex/hooks")!)
+                    .font(.caption)
+                Spacer()
+                Button("Got it") { dismiss() }
+                    .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(20)
+        .frame(width: 460)
     }
 }
