@@ -45,9 +45,14 @@ fn parse_agent(args: &[String]) -> Option<String> {
     None
 }
 
-/// Minimal HTTP POST to the local listener (no extra deps).
+/// Minimal HTTP POST to the local listener (no extra deps). Bounded by short
+/// timeouts so a hook never hangs the agent that invoked it.
 fn post(body: &str) -> std::io::Result<()> {
-    let mut stream = TcpStream::connect(("127.0.0.1", crate::server::HOOK_PORT))?;
+    use std::time::Duration;
+    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], crate::server::HOOK_PORT));
+    let mut stream = TcpStream::connect_timeout(&addr, Duration::from_millis(500))?;
+    stream.set_write_timeout(Some(Duration::from_millis(500)))?;
+    stream.set_read_timeout(Some(Duration::from_millis(500)))?;
     let req = format!(
         "POST /event HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
         body.len(),
