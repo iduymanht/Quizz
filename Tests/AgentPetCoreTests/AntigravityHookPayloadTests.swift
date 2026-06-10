@@ -14,7 +14,7 @@ final class AntigravityHookPayloadTests: XCTestCase {
         XCTAssertEqual(e?.sessionId, "c1")
         XCTAssertEqual(e?.eventName, "working")
         XCTAssertEqual(e?.project, "/Users/me/proj")
-        XCTAssertEqual(e?.message, "run_command")
+        XCTAssertTrue(ActivityTheme.chef.running.contains(e?.message ?? ""), "got \(e?.message ?? "nil")")
         XCTAssertEqual(StateMapper.state(for: .antigravity, eventName: e!.eventName), .working)
     }
 

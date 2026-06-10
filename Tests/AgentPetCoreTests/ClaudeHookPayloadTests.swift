@@ -36,4 +36,20 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertNil(payload(#"{"cwd":"/p"}"#)?.makeEvent(now: now))
         XCTAssertNil(payload("not json"))
     }
+
+    // MARK: - Other agents routed through ClaudeHookPayload (claudeNested style)
+
+    func testCodexPreToolUseActivityMessage() {
+        let json = #"{"session_id":"cx1","cwd":"/proj","hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"npm test"}}"#
+        let event = payload(json)?.makeEvent(now: now, kind: .codex)
+        XCTAssertEqual(event?.agentKind, .codex)
+        XCTAssertTrue(ActivityTheme.chef.running.contains(event?.message ?? ""), "got \(event?.message ?? "nil")")
+    }
+
+    func testGeminiBeforeToolActivityMessage() {
+        let json = #"{"session_id":"gm1","cwd":"/proj","hook_event_name":"BeforeTool","tool_name":"run_shell_command","tool_input":{"command":"ls"}}"#
+        let event = payload(json)?.makeEvent(now: now, kind: .gemini)
+        XCTAssertEqual(event?.agentKind, .gemini)
+        XCTAssertTrue(ActivityTheme.chef.running.contains(event?.message ?? ""), "got \(event?.message ?? "nil")")
+    }
 }

@@ -38,12 +38,16 @@ public struct AntigravityHookPayload: Decodable, Equatable {
         } else {
             return nil
         }
+        let context = ActivityFormatter.activityMessage(
+            eventName: state.rawValue, sessionId: conversationId,
+            toolName: toolCall?.name, toolInput: nil, explicitMessage: nil
+        )
         return AgentEvent(
             sessionId: conversationId,
             agentKind: .antigravity,
             eventName: state.rawValue,
             project: workspacePaths?.first(where: { !$0.isEmpty }),
-            message: toolCall?.name,
+            message: context,
             transcriptPath: transcriptPath,
             timestamp: now
         )
