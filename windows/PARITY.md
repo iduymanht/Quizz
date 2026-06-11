@@ -66,5 +66,7 @@ Trạng thái: ✅ có rồi · 🔧 đang port đợt này · ⏳ để đợt 
 | Animations: gán clip cho từng mood (PetBindings) | ✓ | ✅ (5 mood × 9 animation) |
 | Create pet (đặt tên → local pack) + delete | ✓ | ✅ import giữ tên file làm tên pet |
 | Onboarding 3 bước | ✓ | ⏳ (mở Settings lần đầu) |
-| Live preview panel (demo webhook đa agent) | ✓ | ✅ 3 nút preview |
+| Segmented controls + bold headers + About pills + icon app từ icns mac | ✓ | ✅ đối chiếu screenshot từng tab |
+| Multi-agent bubble toggle (off = simple bubble) | ✓ | ✅ |
+| Live preview panel (demo webhook đa agent) | ✓ | ✅ FULL panel (stage + quick scenarios + webhook list + add column, cửa sổ nở 640→1380) |
 | Updater | Sparkle + badge | ✅ Tauri updater |

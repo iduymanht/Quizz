@@ -8,6 +8,26 @@ import { t, getLang, setLang, type Lang } from "./i18n";
 import { SessionStore, basename, type AgentEventPayload, type Session } from "./state";
 import { agentIconUrl } from "./icons";
 import { LAYOUT_PRESETS, readBubbleConfig, elapsedString, type TokenItem, type BubbleToken } from "./bubble";
+import { initDemo } from "./demo";
+
+// ------------------------------------------------------------- segmented ----
+// macOS-style segmented controls: <span class="seg" data-key data-default>.
+function initSegs() {
+  document.querySelectorAll<HTMLElement>(".seg[data-key]").forEach((seg) => {
+    const key = seg.dataset.key!;
+    const current = localStorage.getItem(key) || seg.dataset.default || "";
+    const btns = seg.querySelectorAll<HTMLButtonElement>("button");
+    btns.forEach((b) => {
+      b.classList.toggle("sel", b.dataset.v === current);
+      b.onclick = () => {
+        localStorage.setItem(key, b.dataset.v!);
+        btns.forEach((x) => x.classList.toggle("sel", x === b));
+        emit("bubble-changed", null);
+        document.dispatchEvent(new CustomEvent("seg-changed", { detail: key }));
+      };
+    });
+  });
+}
 
 // ------------------------------------------------------------------ tabs ----
 function initTabs() {
@@ -263,22 +283,21 @@ const MSG_AGENTS: [string, string][] = [
 
 function initBubble() {
   const changed = () => { emit("bubble-changed", null); };
-  const theme = document.getElementById("theme") as HTMLSelectElement;
   const opacity = document.getElementById("opacity") as HTMLInputElement;
-  const fontSize = document.getElementById("font-size") as HTMLInputElement;
   const fontFamily = document.getElementById("font-family") as HTMLSelectElement;
   const msgAgent = document.getElementById("msg-agent") as HTMLSelectElement;
   const editors = document.getElementById("msg-editors")!;
 
-  theme.value = localStorage.getItem("ap_theme") || "dark";
   opacity.value = localStorage.getItem("ap_opacity") || "92";
-  fontSize.value = localStorage.getItem("ap_font_size") || "12";
   fontFamily.value = localStorage.getItem("ap_font_family") || "system";
 
-  theme.onchange = () => { localStorage.setItem("ap_theme", theme.value); changed(); };
   opacity.oninput = () => { localStorage.setItem("ap_opacity", opacity.value); changed(); };
-  fontSize.oninput = () => { localStorage.setItem("ap_font_size", fontSize.value); changed(); };
   fontFamily.onchange = () => { localStorage.setItem("ap_font_family", fontFamily.value); changed(); };
+
+  // Multi-agent bubble master toggle (mac BubbleSettings.multiAgentBubbleEnabled).
+  const multi = document.getElementById("multi") as HTMLInputElement;
+  multi.checked = localStorage.getItem("ap_multi") !== "0";
+  multi.onchange = () => { localStorage.setItem("ap_multi", multi.checked ? "1" : "0"); changed(); };
 
   msgAgent.innerHTML = "";
   for (const [k, name] of MSG_AGENTS) {
@@ -340,11 +359,10 @@ function initBubbleDisplay() {
     el.value = localStorage.getItem(key) || dflt;
     el.onchange = () => { localStorage.setItem(key, el.value); changed(); paintPreview(); };
   };
-  bind("bub-mode", "ap_bub_mode", "carousel");
-  bind("bub-grouping", "ap_bub_grouping", "byKind");
   bind("bub-filter", "ap_bub_filter", "all");
-  bind("bub-sep", "ap_bub_sep", "·");
-  bind("bub-dot", "ap_bub_dot", "plain");
+  // Segmented controls (mode/grouping/sep/dot) save via initSegs; repaint the
+  // preview row when one changes.
+  document.addEventListener("seg-changed", () => paintPreview());
 
   const max = document.getElementById("bub-max") as HTMLInputElement;
   max.value = localStorage.getItem("ap_bub_max") || "5";
@@ -439,6 +457,14 @@ function initPetControls() {
   const size = document.getElementById("pet-size") as HTMLInputElement;
   size.value = localStorage.getItem("ap_pet_size") || "100";
   size.oninput = () => { localStorage.setItem("ap_pet_size", size.value); changed(); };
+  document.querySelectorAll<HTMLButtonElement>(".size-presets button").forEach((b) => {
+    b.onclick = () => {
+      size.value = b.dataset.size!;
+      localStorage.setItem("ap_pet_size", size.value);
+      size.dispatchEvent(new Event("input"));
+      changed();
+    };
+  });
 
   const fx = document.getElementById("fx") as HTMLInputElement;
   fx.checked = localStorage.getItem("ap_fx") !== "0";
@@ -466,17 +492,6 @@ function initPetControls() {
     };
     reader.readAsDataURL(f);
   };
-}
-
-// --------------------------------------------------------- live preview ----
-function initPreview() {
-  document.querySelectorAll<HTMLButtonElement>(".preview-btns button").forEach((b) => {
-    b.onclick = () => {
-      const state = b.dataset.prev!;
-      emit("agent-event", { agent: "demo", session: "preview", state, project: "preview", message: "" });
-      if (state === "done") setTimeout(() => emit("agent-end", "preview"), 4000);
-    };
-  });
 }
 
 // ------------------------------------------------------------ animations ----
@@ -711,11 +726,23 @@ function applyStatic() {
   set("t-coffee", "Buy me a coffee");
   set("t-author", "Author");
   set("t-version2", "Version");
-  // bottom bar
-  set("t-preview-sub", "Try the bubble without running an agent.");
-  set("t-pv-working", "Working");
-  set("t-pv-waiting", "Needs you");
-  set("t-pv-done", "Done");
+  // bottom bar + demo panel
+  set("t-lp", "Live preview");
+  set("t-preview-sub", "Fire webhooks for many agents with your current settings");
+  set("t-dp-title", "Live preview");
+  set("t-dp-quick", "Quick scenarios");
+  set("t-dp-active", "Active webhooks");
+  set("t-dp-add", "Add webhook");
+  set("t-dp-hint", "Add agents here, then change each webhook's state or delete it in the list on the left.");
+  set("dp-spawn", "Spawn 3 working");
+  set("dp-finish", "Finish all");
+  set("dp-clear", "Clear all");
+  set("dp-empty", "No webhooks yet. Add one from the right →");
+  set("t-bubmode", "Bubble mode");
+  set("t-multi", "Multi-agent bubble");
+  set("t-multi-sub", "Structured rows with icons, state dots, and activity messages.");
+  set("t-thanks", "If AgentPet helps your workflow, a star means a lot. Thank you!");
+  set("t-fontsize", "Font size");
   search.placeholder = t("Search pets by name...");
 }
 
@@ -763,7 +790,7 @@ function initSliders() {
       const max = Number(r.max) || 100;
       const pct = ((Number(r.value) - min) / (max - min)) * 100;
       r.style.setProperty("--fill", `${pct}%`);
-      if (val) val.textContent = r.value;
+      if (val) val.textContent = r.value + (r.id === "opacity" ? "%" : "");
     };
     r.addEventListener("input", paint);
     paint();
@@ -780,8 +807,9 @@ initBubbleDisplay();
 initAnimations();
 initSounds();
 initSessions();
-initPreview();
 initNotify();
 initAutostart();
 initSliders();
+initSegs();
 initMisc();
+initDemo();

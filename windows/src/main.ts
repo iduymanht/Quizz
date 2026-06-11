@@ -6,7 +6,7 @@ import { SessionStore, aggregateMood, basename, type AgentEventPayload } from ".
 import { BubbleRenderer } from "./bubble";
 import { loadCatalog, savedSlug, saveSlug } from "./catalog";
 import { t, setLang, type Lang } from "./i18n";
-import { bubbleLines } from "./activity";
+import { bubbleLines, PET_CHAT } from "./activity";
 import { sendNotification, isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notification";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
@@ -116,10 +116,14 @@ function chime(event: "done" | "waiting") {
 let lastResolved = "idle";
 let celebrateUntil = 0;
 let wasCelebrating = false;
+let prevSimpleMood = "";
 let moodLine = ""; // the single-bubble line for idle/done/celebrate
 
 function pickMoodLine(mood: string) {
-  const pool = bubbleLines(null, mood);
+  // Custom/system pools; working/waiting fall back to the PetChat lines so the
+  // simple-bubble mode (multi-agent off) always has something to say.
+  let pool = bubbleLines(null, mood);
+  if (!pool.length) pool = PET_CHAT[mood] ?? [];
   moodLine = pool.length ? pool[Math.floor(Math.random() * pool.length)] : "";
 }
 
@@ -147,7 +151,13 @@ function render() {
   const mood = celebrating ? "celebrate" : resolved;
   pet.setState(mood);
 
-  if (mood === "working" || mood === "waiting") {
+  const multi = localStorage.getItem("ap_multi") !== "0";
+  if ((mood === "working" || mood === "waiting") && !multi) {
+    // Simple-bubble mode (mac: multi-agent off) , one plain chat line.
+    if (resolved !== prevSimpleMood) { pickMoodLine(mood); prevSimpleMood = resolved; }
+    if (!moodLine) pickMoodLine(mood);
+    bubble.renderLine(moodLine);
+  } else if (mood === "working" || mood === "waiting") {
     bubble.render(sessions.filter((s) => s.state !== "idle" && s.state !== "registered"));
   } else if (mood === "celebrate") {
     bubble.renderLine(moodLine || t("Done"));

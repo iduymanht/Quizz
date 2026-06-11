@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body class="settings">
+    <div class="shell">
+    <div class="main-col">
     <!-- macOS preferences-style tab bar -->
     <nav class="tabbar">
       <button class="tab sel" data-tab="general">
@@ -146,7 +148,8 @@
           <div class="ghead" id="t-size">Size on screen</div>
           <div class="gcard">
             <div class="row"><span id="t-petsize">Pet size</span>
-              <span class="slider-wrap"><input type="range" id="pet-size" min="70" max="130" /><span class="val dim" id="pet-size-val"></span></span></div>
+              <span class="slider-wrap"><input type="range" id="pet-size" min="70" max="130" /><span class="val dim" id="pet-size-val"></span>
+              <span class="size-presets"><button data-size="80">S</button><button data-size="100">M</button><button data-size="125">L</button></span></span></div>
             <label class="row"><span id="t-fx">Idle bobbing animation</span><input type="checkbox" id="fx" /></label>
           </div>
         </div>
@@ -155,14 +158,31 @@
       <!-- =============================== BUBBLE ============================== -->
       <div class="page" data-page="bubble">
         <div class="group">
+          <div class="ghead" id="t-bubmode">Bubble mode</div>
+          <div class="gcard">
+            <label class="row"><span class="rt"><span id="t-multi">Multi-agent bubble</span>
+              <span class="cap" id="t-multi-sub">Structured rows with icons, state dots, and activity messages.</span></span>
+              <input type="checkbox" id="multi" /></label>
+          </div>
+        </div>
+
+        <div class="group">
           <div class="ghead" id="t-appearance">Appearance</div>
           <div class="gcard">
             <div class="row"><span id="t-theme">Theme</span>
-              <select id="theme"><option value="dark" id="o-dark">Dark</option><option value="light" id="o-light">Light</option><option value="system" id="o-theme-system">System</option></select></div>
+              <span class="seg" id="theme" data-key="ap_theme" data-default="dark">
+                <button data-v="light" id="o-light">Light</button>
+                <button data-v="dark" id="o-dark">Dark</button>
+                <button data-v="system" id="o-theme-system">System</button>
+              </span></div>
+            <div class="row"><span id="t-fontsize">Font size</span>
+              <span class="seg" id="font-size-seg" data-key="ap_font_size" data-default="12">
+                <button data-v="10">S</button>
+                <button data-v="12">M</button>
+                <button data-v="14">L</button>
+              </span></div>
             <div class="row"><span id="t-opacity">Opacity</span>
               <span class="slider-wrap"><input type="range" id="opacity" min="60" max="100" /><span class="val dim" id="opacity-val"></span></span></div>
-            <div class="row"><span id="t-fontsize">Text size</span>
-              <span class="slider-wrap"><input type="range" id="font-size" min="10" max="18" /><span class="val dim" id="font-size-val"></span></span></div>
             <div class="row"><span id="t-font">Font</span>
               <select id="font-family">
                 <option value="system" id="o-system">System</option>
@@ -179,16 +199,16 @@
           <div class="ghead" id="t-display">Display</div>
           <div class="gcard">
             <div class="row"><span id="t-rows">Rows</span>
-              <select id="bub-mode">
-                <option value="list" id="o-bm-list">All rows</option>
-                <option value="carousel" id="o-bm-carousel">Carousel</option>
-                <option value="compact" id="o-bm-compact">Compact</option>
-              </select></div>
+              <span class="seg" id="bub-mode" data-key="ap_bub_mode" data-default="carousel">
+                <button data-v="list" id="o-bm-list">All rows</button>
+                <button data-v="carousel" id="o-bm-carousel">Carousel</button>
+                <button data-v="compact" id="o-bm-compact">Compact</button>
+              </span></div>
             <div class="row"><span id="t-grouping">Sessions</span>
-              <select id="bub-grouping">
-                <option value="byKind" id="o-bg-kind">Grouped by agent</option>
-                <option value="all" id="o-bg-all">All sessions</option>
-              </select></div>
+              <span class="seg" id="bub-grouping" data-key="ap_bub_grouping" data-default="byKind">
+                <button data-v="byKind" id="o-bg-kind">Grouped by agent</button>
+                <button data-v="all" id="o-bg-all">All sessions</button>
+              </span></div>
             <div class="row"><span id="t-maxrows">Max rows</span>
               <span class="slider-wrap"><input type="range" id="bub-max" min="1" max="10" /><span class="val dim" id="bub-max-val"></span></span></div>
             <div class="row"><span id="t-filter">Include states</span>
@@ -224,17 +244,17 @@
           <div class="ghead" id="t-style">Style</div>
           <div class="gcard">
             <div class="row"><span id="t-separator">Separator</span>
-              <select id="bub-sep">
-                <option value="·">·</option>
-                <option value="→">→</option>
-                <option value="|">|</option>
-                <option value=" " id="o-sep-space">space</option>
-              </select></div>
+              <span class="seg" id="bub-sep" data-key="ap_bub_sep" data-default="·">
+                <button data-v="·">·</button>
+                <button data-v="→">→</button>
+                <button data-v="|">|</button>
+                <button data-v=" " id="o-sep-space">space</button>
+              </span></div>
             <div class="row"><span id="t-dotstyle">State dot</span>
-              <select id="bub-dot">
-                <option value="plain" id="o-dot-plain">Plain dot</option>
-                <option value="claude" id="o-dot-claude">Claude style</option>
-              </select></div>
+              <span class="seg" id="bub-dot" data-key="ap_bub_dot" data-default="plain">
+                <button data-v="plain" id="o-dot-plain">Plain dot</button>
+                <button data-v="claude" id="o-dot-claude">Claude style</button>
+              </span></div>
           </div>
         </div>
 
@@ -279,16 +299,17 @@
         </div>
         <div class="group">
           <div class="gcard pad btns">
-            <button class="prominent" data-url="https://github.com/ntd4996/agentpet" id="t-star">Star on GitHub</button>
-            <button class="ghost-btn" data-url="https://discord.gg/kzFJKsZav" id="t-discord">Join the Discord</button>
-            <button class="ghost-btn" data-url="https://buymeacoffee.com/ntd4996" id="t-coffee">Buy me a coffee</button>
+            <button class="prominent pill" data-url="https://github.com/ntd4996/agentpet"><span>★</span> <span id="t-star">Star on GitHub</span></button>
+            <button class="ghost-btn pill" data-url="https://discord.gg/kzFJKsZav"><span>💬</span> <span id="t-discord">Join the Discord</span></button>
+            <button class="ghost-btn pill" data-url="https://buymeacoffee.com/ntd4996"><span>☕</span> <span id="t-coffee">Buy me a coffee</span></button>
+            <div class="cap center" id="t-thanks">If AgentPet helps your workflow, a star means a lot. Thank you!</div>
           </div>
         </div>
         <div class="group">
           <div class="ghead" id="t-author">Author</div>
           <div class="gcard">
-            <div class="row link" data-url="https://github.com/ntd4996"><span>Nguyễn Thành Đạt (@ntd4996)</span><span class="dim">↗</span></div>
-            <div class="row link" data-url="https://github.com/ntd4996/agentpet"><span>github.com/ntd4996/agentpet</span><span class="dim">↗</span></div>
+            <div class="row link" data-url="https://github.com/ntd4996"><span class="alink">👤 Nguyễn Thành Đạt (@ntd4996)</span><span class="dim">↗</span></div>
+            <div class="row link" data-url="https://github.com/ntd4996/agentpet"><span class="alink">&lt;/&gt; github.com/ntd4996/agentpet</span><span class="dim">↗</span></div>
           </div>
         </div>
         <div class="group">
@@ -301,14 +322,45 @@
 
     <!-- bottom bar: live preview, like the macOS app -->
     <footer class="bottombar">
-      <span class="cap" id="t-preview-sub">Try the bubble without running an agent.</span>
+      <button class="lp-btn" id="demo-toggle">✨ <span id="t-lp">Live preview</span></button>
+      <span class="cap" id="t-preview-sub">Fire webhooks for many agents with your current settings</span>
       <span class="spacer"></span>
-      <div class="preview-btns">
-        <button data-prev="working" id="t-pv-working">Working</button>
-        <button data-prev="waiting" id="t-pv-waiting">Needs you</button>
-        <button data-prev="done" id="t-pv-done">Done</button>
-      </div>
     </footer>
+    </div><!-- /main-col -->
+
+    <!-- Live-preview demo panel (the macOS SettingsDemoPanel) -->
+    <aside id="demo-panel" hidden>
+      <div class="demo-main">
+        <div class="demo-head">
+          <span class="demo-title">✨ <span id="t-dp-title">Live preview</span></span>
+          <span class="mood-chip" id="demo-mood" data-mood="idle">Idle</span>
+          <button class="demo-close" id="demo-close">✕</button>
+        </div>
+        <div class="demo-stage">
+          <div class="stage-inner">
+            <div id="demo-bubble" class="bubble" hidden></div>
+            <canvas id="demo-pet" width="160" height="180"></canvas>
+          </div>
+        </div>
+        <div class="demo-scroll">
+          <div class="demo-sec" id="t-dp-quick">Quick scenarios</div>
+          <div class="demo-actions">
+            <button id="dp-spawn">Spawn 3 working</button>
+            <button id="dp-finish">Finish all</button>
+            <button id="dp-clear" class="danger">Clear all</button>
+          </div>
+          <div class="demo-sec demo-sec-row"><span id="t-dp-active">Active webhooks</span><span class="dim" id="dp-count"></span></div>
+          <div id="dp-list"></div>
+          <div class="cap" id="dp-empty">No webhooks yet. Add one from the right →</div>
+        </div>
+      </div>
+      <div class="demo-add">
+        <div class="demo-head"><span class="demo-title">＋ <span id="t-dp-add">Add webhook</span></span></div>
+        <div class="demo-scroll" id="dp-agents"></div>
+        <div class="cap" style="padding: 0 14px 12px" id="t-dp-hint">Add agents here, then change each webhook's state or delete it in the list on the left.</div>
+      </div>
+    </aside>
+    </div><!-- /shell -->
 
     <!-- Codex one-time trust help (the macOS CodexHelpView) -->
     <div class="modal-backdrop" id="codex-help" hidden>
