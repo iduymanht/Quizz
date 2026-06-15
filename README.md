@@ -42,13 +42,25 @@ Running multiple agents in parallel means constantly switching windows to check 
 ## Screenshots
 
 <div align="center">
-  <img src="assets/screenshot-menubar.png" width="360" alt="Menu bar monitor" />
-  <img src="assets/screenshot-settings.png" width="360" alt="Settings" />
-  <img src="assets/screenshot-pet.png" width="360" alt="Pet" />
-  <img src="assets/screenshot-care.png" width="360" alt="Pet care: level, XP and subscription limits" />
+  <img src="assets/screenshot-hud.png" width="300" alt="Right-click the pet for a stats HUD: level, XP, hunger, 7-day burn and live subscription limits" />
+  <p><sub><b>Right-click the pet</b> for a game-style HUD , level, XP, hunger, a 7-day burn chart and your live Claude/Codex limits.</sub></p>
+</div>
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%"><img src="assets/screenshot-menubar.png" width="380" alt="Menu bar monitor" /><br/><sub>Menu bar monitor , every agent at a glance</sub></td>
+    <td align="center" width="50%"><img src="assets/screenshot-care.png" width="380" alt="Pet care tab" /><br/><sub>Care tab , raise your pet with real work</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="assets/screenshot-settings.png" width="380" alt="Settings" /><br/><sub>Native, tabbed Settings</sub></td>
+    <td align="center" width="50%"><img src="assets/screenshot-pet.png" width="380" alt="Desktop pet" /><br/><sub>The desktop pet</sub></td>
+  </tr>
+</table>
+
+<div align="center">
   <br/>
-  <img src="assets/screenshot-leaderboard.png" width="600" alt="Community leaderboard of raised companions" />
-  <br/>
+  <img src="assets/screenshot-leaderboard.png" width="660" alt="Community leaderboard of raised companions" />
+  <p><sub>Community <a href="https://agentpet.thenightwatcher.online/leaderboard">leaderboard</a> , by level, sessions or tokens.</sub></p>
   <img src="assets/demo.gif" width="600" alt="Pet reacting to agent activity" />
 </div>
 
