@@ -174,18 +174,20 @@ export const prerender = false;
     }
 
     // Mirrors the app's right-click HUD badge row: a strip of icon-only badges,
-    // unlocked tinted in the stage color, locked dimmed. Native hover tooltip
-    // shows the name + how to unlock it.
+    // unlocked tinted in the stage color, locked dimmed. Custom CSS tooltip
+    // (shows instantly on hover) with the name + how to unlock it.
     function badgeRow(p: any, color: string): string {
       const have = unlockedSet(p);
       const chips = ACHIEVEMENTS.map(([key, icon, name, hint]) => {
         const on = have.has(key);
-        const title = `${name} — ${on ? "Unlocked" : hint}`;
+        const label = `${name} — ${on ? "Unlocked" : hint}`;
         const svg = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[icon] || ICON.star}</svg>`;
-        return `<span title="${esc(title)}" aria-label="${esc(title)}"
-          class="grid h-7 w-7 place-items-center rounded-lg transition"
-          style="background:${on ? color + "1f" : "#00000008"};color:${on ? color : "#9aa3b2"};opacity:${on ? 1 : 0.45}">${svg}</span>`;
+        const tip = `<span class="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 w-max max-w-[180px] -translate-x-1/2 rounded-lg px-2.5 py-1.5 text-center text-[11px] leading-tight text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100" style="background:#1b1233">
+          <span class="font-semibold">${esc(name)}</span><br><span style="color:#ffffffb3">${esc(on ? "Unlocked" : hint)}</span></span>`;
+        return `<span aria-label="${esc(label)}"
+          class="group relative grid h-7 w-7 place-items-center rounded-lg"
+          style="background:${on ? color + "1f" : "#00000008"};color:${on ? color : "#9aa3b2"}">${svg}${tip}</span>`;
       }).join("");
       return `
         <div class="mt-3">
