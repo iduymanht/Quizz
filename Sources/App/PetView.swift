@@ -80,14 +80,14 @@ struct FloatingPetView: View {
             }
             PetView(model: model, size: pet.petPoint)
                 .overlay {
-                    if pet.petTapCount > 0 {
+                    if model.petTapCount > 0 {
                         PetHearts(size: pet.petPoint)
-                            .id(pet.petTapCount)
+                            .id(model.petTapCount)
                     }
                 }
                 .overlay(alignment: .top) {
-                    if !pet.petReactionLine.isEmpty {
-                        Text(pet.petReactionLine)
+                    if !model.petReactionLine.isEmpty {
+                        Text(model.petReactionLine)
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.primary.opacity(0.85))
                             .padding(.horizontal, 10)
@@ -109,17 +109,17 @@ struct FloatingPetView: View {
                     }
                 }
                 .scaleEffect(
-                    x: pet.isPetted ? 1.12 : 1.0,
-                    y: pet.isPetted ? 0.82 : 1.0,
+                    x: model.isPetted ? 1.12 : 1.0,
+                    y: model.isPetted ? 0.82 : 1.0,
                     anchor: .bottom
                 )
-                .animation(.interpolatingSpring(stiffness: 300, damping: 8), value: pet.isPetted)
+                .animation(.interpolatingSpring(stiffness: 300, damping: 8), value: model.isPetted)
                 .onTapGesture {
-                    PetController.shared.petTap()
+                    model.petTap()
                 }
         }
         .fixedSize(horizontal: true, vertical: true)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: pet.petReactionLine)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: model.petReactionLine)
         .background(
             GeometryReader { proxy in
                 Color.clear.preference(key: PetContentSizeKey.self, value: proxy.size)

@@ -5,7 +5,13 @@ import AgentPetCore
     static let shared = ProjectPetSettings()
     private static let key = "agentpet.projectPets"
 
-    @Published private(set) var mappings: [ProjectPetMapping] = []
+    @Published private(set) var mappings: [ProjectPetMapping] = [] {
+        didSet { onChange?() }
+    }
+
+    /// Fired when the mappings change so the window controller can re-plan (e.g.
+    /// removing a project's pet folds its window back into the main pet at once).
+    var onChange: (() -> Void)?
 
     init() { load() }
 

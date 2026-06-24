@@ -288,6 +288,17 @@ private struct GeneralTab: View {
                     Spacer()
                     ColorSwitch(isOn: $pet.splitPet)
                 }
+                if pet.splitPet {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Hide idle project pets")
+                            Text("Show a configured project's pet only while it's working; hide it when idle.")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        ColorSwitch(isOn: $pet.hideIdleProjectPets)
+                    }
+                }
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Animate pets")

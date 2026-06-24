@@ -18,6 +18,19 @@ public enum ProjectPetResolver {
         return path.hasPrefix(root + "/")
     }
 
+    /// Mappings de-duplicated by normalized project path (first wins), sorted by
+    /// path for a stable window order. Guards the planner against a settings file
+    /// that somehow holds two entries for the same folder.
+    public static func dedupedByKey(_ mappings: [ProjectPetMapping]) -> [ProjectPetMapping] {
+        var seen = Set<String>()
+        var out: [ProjectPetMapping] = []
+        for m in mappings.sorted(by: { normalize($0.projectPath) < normalize($1.projectPath) }) {
+            let k = normalize(m.projectPath)
+            if seen.insert(k).inserted { out.append(m) }
+        }
+        return out
+    }
+
     /// Strips a trailing slash and standardises the path.
     public static func normalize(_ path: String) -> String {
         let std = (path as NSString).standardizingPath

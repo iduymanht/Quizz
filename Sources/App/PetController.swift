@@ -33,6 +33,14 @@ final class PetController: ObservableObject {
             update(sessions: latestSessions)   // re-evaluate windows when toggled
         }
     }
+    /// In split mode: hide a configured project's pet while it has no active work
+    /// (it reappears when the project runs again). Off = the project pet stays put.
+    @Published var hideIdleProjectPets: Bool = UserDefaults.standard.bool(forKey: "agentpet.hideIdleProjectPets") {
+        didSet {
+            UserDefaults.standard.set(hideIdleProjectPets, forKey: "agentpet.hideIdleProjectPets")
+            update(sessions: latestSessions)
+        }
+    }
     /// When disabled, freezes all continuous/perpetual pet and bubble animation so
     /// the SwiftUI render loop can go idle (lower CPU, reduce-motion option).
     @Published var animationsEnabled: Bool =
@@ -83,6 +91,13 @@ final class PetController: ObservableObject {
 
     func start() {
         // Ticker drives chatLine updates; no separate chat timer needed.
+        // Re-plan windows when project→pet mappings change so adding/removing a
+        // configured project takes effect immediately (no need to wait for the
+        // next session event).
+        ProjectPetSettings.shared.onChange = { [weak self] in
+            guard let self else { return }
+            self.update(sessions: self.latestSessions)
+        }
     }
 
     /// Returns the effective sprite fps for a given mood, honouring the slider.
@@ -303,58 +318,6 @@ final class PetController: ObservableObject {
         }
     }
 
-    // MARK: - Pet tap interaction
-
-    @Published private(set) var isPetted = false
-    @Published private(set) var petReactionLine: String = ""
-    @Published private(set) var petTapCount: Int = 0
-
-    private var petBounceTimer: Timer?
-    private var petLineTimer: Timer?
-    private var petCooldown = false
-    private var consecutivePets = 0
-    private var lastPetTime: Date?
-
-    private static let petReactions: [[String]] = [
-        ["Hehe~", "That tickles!", "Hi there! 👋", "Oh! Hello~", "*purrs*", "Nyaa~"],
-        ["I love you! 💕", "More pets please!", "Best human ever!", "So happy~ ✨"],
-        ["MAXIMUM LOVE! 💖", "Can't stop smiling! 🥰", "I'm gonna melt~"],
-    ]
-
-    func petTap() {
-        guard !petCooldown else { return }
-        petCooldown = true
-
-        let now = Date()
-        if let last = lastPetTime, now.timeIntervalSince(last) < 3.0 {
-            consecutivePets += 1
-        } else {
-            consecutivePets = 1
-        }
-        lastPetTime = now
-
-        let tier = consecutivePets >= 6 ? 2 : consecutivePets >= 3 ? 1 : 0
-        petReactionLine = Self.petReactions[tier].randomElement() ?? "Hehe~"
-        petTapCount += 1
-
-        isPetted = true
-        petBounceTimer?.invalidate()
-        petBounceTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { _ in
-            Task { @MainActor [weak self] in self?.isPetted = false }
-        }
-
-        petLineTimer?.invalidate()
-        petLineTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
-            Task { @MainActor [weak self] in self?.petReactionLine = "" }
-        }
-
-        NSSound(named: "Pop")?.play()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-            self?.petCooldown = false
-        }
-    }
-
     // MARK: - Agent list
 
     /// Builds the structured session list and a plain-text fallback chatLine.
@@ -433,7 +396,8 @@ final class PetController: ObservableObject {
             split: splitPet,
             mappings: ProjectPetSettings.shared.mappings,
             defaultPetID: selectedPetID,
-            forceDefault: breakState != nil
+            forceDefault: breakState != nil,
+            hideIdleProjects: hideIdleProjectPets
         )
 
         let liveKeys = Set(specs.map(\.key))
