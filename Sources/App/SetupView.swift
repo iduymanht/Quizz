@@ -630,6 +630,25 @@ private struct PetTab: View {
                     .offset(x: -3, y: -3)
             }
         }
+        // Project slots get a direct remove button so deleting a project is one
+        // click (the "Remove project" button at the bottom of its config panel
+        // was easy to miss).
+        .overlay(alignment: .topTrailing) {
+            if case .project(let path) = slot {
+                Button {
+                    if selectedSlot == slot { selectedSlot = .defaultPet }
+                    projectSettings.remove(projectPath: path)
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, .black.opacity(0.45))
+                }
+                .buttonStyle(.plain)
+                .offset(x: 5, y: -5)
+                .help("Remove project")
+            }
+        }
     }
 
     private var addProjectSlot: some View {
