@@ -48,6 +48,53 @@ const user = await adminUser(Astro.cookies);
       const modalBody = document.getElementById("modal-body")!;
       let status = "pending";
       let subsById: Record<string, any> = {};
+      let animTimer: number | null = null;
+
+      // Slices a spritesheet's first (idle) row into frames via alpha gutters,
+      // the same way the app does, so we can animate it instead of showing a
+      // static sheet.
+      function seg(a: boolean[]) {
+        const r: [number, number][] = []; let s: number | null = null;
+        for (let i = 0; i < a.length; i++) { if (a[i] && s === null) s = i; else if (!a[i] && s !== null) { r.push([s, i]); s = null; } }
+        if (s !== null) r.push([s, a.length]); return r;
+      }
+      function sliceFirstRow(img: HTMLImageElement): { x: number; y: number; w: number; h: number }[] | null {
+        const w = img.naturalWidth, h = img.naturalHeight, TH = 16;
+        const off = document.createElement("canvas"); off.width = w; off.height = h;
+        const o = off.getContext("2d")!; o.drawImage(img, 0, 0);
+        let px: Uint8ClampedArray; try { px = o.getImageData(0, 0, w, h).data; } catch { return null; }
+        const rowHas: boolean[] = new Array(h).fill(false);
+        for (let y = 0; y < h; y++) { const b = y * w * 4; for (let x = 0; x < w; x++) if (px[b + x * 4 + 3] > TH) { rowHas[y] = true; break; } }
+        const rows = seg(rowHas); if (!rows.length) return null;
+        const [y0, y1] = rows[0];
+        const colHas: boolean[] = new Array(w).fill(false);
+        for (let x = 0; x < w; x++) { for (let y = y0; y < y1; y++) if (px[(y * w + x) * 4 + 3] > TH) { colHas[x] = true; break; } }
+        const cols = seg(colHas);
+        return cols.map(([x0, x1]) => ({ x: x0, y: y0, w: x1 - x0, h: y1 - y0 }));
+      }
+      function stopAnim() { if (animTimer !== null) { clearInterval(animTimer); animTimer = null; } }
+      function startAnim(url: string) {
+        stopAnim();
+        const cv = document.getElementById("sub-anim") as HTMLCanvasElement | null;
+        if (!cv) return;
+        const ctx = cv.getContext("2d")!; ctx.imageSmoothingEnabled = false;
+        const img = new Image();
+        img.onload = () => {
+          const frames = sliceFirstRow(img);
+          if (!frames || !frames.length) return;
+          let i = 0;
+          const draw = () => {
+            const f = frames[i % frames.length];
+            const sc = Math.min(cv.width / f.w, cv.height / f.h) * 0.9, dw = f.w * sc, dh = f.h * sc;
+            ctx.clearRect(0, 0, cv.width, cv.height);
+            ctx.drawImage(img, f.x, f.y, f.w, f.h, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh);
+            i++;
+          };
+          draw();
+          if (frames.length > 1) animTimer = window.setInterval(draw, 1000 / 6);
+        };
+        img.src = url;
+      }
 
       function actionsHtml(s: any) {
         return s.status === "pending"
@@ -78,8 +125,12 @@ const user = await adminUser(Astro.cookies);
         const s = subsById[id]; if (!s) return;
         const when = s.created_at ? new Date(s.created_at).toLocaleString() : "";
         modalBody.innerHTML = `
-          <div class="grid place-items-center border-b border-line p-6 sprite-checker">
-            <img src="${s.previewUrl}" alt="" class="pixel-art max-h-80" />
+          <div class="border-b border-line p-6 sprite-checker">
+            <div class="grid place-items-center">
+              <canvas id="sub-anim" width="240" height="240" class="pixel-art h-44 w-44"></canvas>
+            </div>
+            <div class="mt-2 text-center text-[11px] text-faint">Idle animation · full spritesheet below</div>
+            <img src="${s.previewUrl}" alt="" class="pixel-art mx-auto mt-2 max-h-44 opacity-90" />
           </div>
           <div class="p-5">
             <div class="flex items-start justify-between gap-3">
@@ -99,8 +150,9 @@ const user = await adminUser(Astro.cookies);
             <div class="mt-5">${actionsHtml(s)}</div>
           </div>`;
         modal.classList.remove("hidden"); modal.classList.add("flex");
+        startAnim(s.previewUrl);
       }
-      function closeModal() { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+      function closeModal() { stopAnim(); modal.classList.add("hidden"); modal.classList.remove("flex"); }
 
       function refreshCount() {
         const n = Object.keys(subsById).length;
