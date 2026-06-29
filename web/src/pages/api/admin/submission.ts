@@ -46,10 +46,11 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     return json({ ok: true, id, status: "rejected" });
   }
 
-  // approve: publish to the live prefix
-  const obj = await bucket.get(pendingKey);
-  if (!obj) return json({ error: "upload missing, ask them to resubmit" }, 410);
+  // approve: publish to the live prefix. Prefer the pending upload; fall back to an
+  // already-published sprite (re-approving a pet that was approved before).
   const sheetName = `spritesheet.${sub.sheet_ext}`;
+  const obj = (await bucket.get(pendingKey)) || (await bucket.get(`${dir}/${sheetName}`));
+  if (!obj) return json({ error: "upload missing, ask them to resubmit" }, 410);
   await bucket.put(`${dir}/${sheetName}`, obj.body, {
     httpMetadata: { contentType: sub.sheet_ext === "png" ? "image/png" : "image/webp", cacheControl: "public, max-age=31536000, immutable" },
   });
