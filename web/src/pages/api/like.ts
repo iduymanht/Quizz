@@ -51,7 +51,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (liked) {
     const owner: any = await db.prepare("SELECT user_id, name FROM submissions WHERE slug=? AND status='approved' LIMIT 1").bind(slug).first();
     if (owner && owner.user_id && owner.user_id !== user.id) {
-      await addNotification(db, owner.user_id, "like", `${user.login} liked “${owner.name}” ❤️`, null, `/pet/${slug}`, slug);
+      await addNotification(db, owner.user_id, "like", owner.name, user.login, `/pet/${slug}`, slug);
     }
   }
   return json({ likes: count, liked });

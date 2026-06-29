@@ -113,12 +113,20 @@ const user = await adminUser(Astro.cookies);
       }
 
       function actionsHtml(s: any) {
-        return s.status === "pending"
-          ? `<div class="flex gap-2">
+        if (s.status === "pending")
+          return `<div class="flex gap-2">
                <button data-approve="${s.id}" class="btn-primary !px-4 !py-2 text-sm flex-1">Approve</button>
                <button data-reject="${s.id}" class="chip !border-rose-200 !text-rose-600 !px-4 !py-2 text-sm">Reject</button>
-             </div>`
-          : `<div class="text-xs font-semibold ${s.status === "approved" ? "text-emerald-600" : "text-rose-600"} uppercase">${s.status}</div>`;
+             </div>`;
+        if (s.status === "rejected")
+          return `<div class="flex items-center gap-2">
+               <span class="text-xs font-semibold text-rose-600 uppercase">rejected</span>
+               <button data-approve="${s.id}" class="btn-primary !px-4 !py-2 text-sm ml-auto">Approve</button>
+             </div>`;
+        return `<div class="flex items-center gap-2">
+               <span class="text-xs font-semibold text-emerald-600 uppercase">approved</span>
+               <button data-reject="${s.id}" class="chip !border-rose-200 !text-rose-600 !px-4 !py-2 text-sm ml-auto">Reject</button>
+             </div>`;
       }
 
       function card(s: any) {

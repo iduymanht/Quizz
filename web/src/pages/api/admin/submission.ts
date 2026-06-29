@@ -26,23 +26,30 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 
   const sub = await getSubmission(db, id);
   if (!sub) return json({ error: "not found" }, 404);
-  if (sub.status !== "pending") return json({ error: "already reviewed" }, 409);
 
   const pendingKey = `submissions/${sub.id}.${sub.sheet_ext}`;
+  const dir = `pets/${sub.slug}`;
+  // Re-deciding a pet should not leave a stale opposite notification behind.
+  const clearDecisionNotis = async () => {
+    try { await db.prepare("DELETE FROM notifications WHERE user_id=? AND slug=? AND type IN ('approved','rejected')").bind(sub.user_id, sub.slug).run(); } catch {}
+  };
 
   if (action === "reject") {
     await setSubmissionStatus(db, id, "rejected");
-    try { await bucket.delete(pendingKey); } catch {}
-    await addNotification(db, sub.user_id, "rejected", `“${sub.name}” wasn't approved`,
-      "Tweak it and submit again any time.", "/submit", sub.slug);
+    // If it was previously approved, pull the published files from the gallery.
+    try { await bucket.delete(`${dir}/spritesheet.${sub.sheet_ext}`); } catch {}
+    try { await bucket.delete(`${dir}/pet.json`); } catch {}
+    // Keep the pending upload so the pet can be approved again later.
+    await clearDecisionNotis();
+    await addNotification(db, sub.user_id, "rejected", sub.name,
+      null, "/submit", sub.slug);
     return json({ ok: true, id, status: "rejected" });
   }
 
   // approve: publish to the live prefix
   const obj = await bucket.get(pendingKey);
-  if (!obj) return json({ error: "upload missing" }, 410);
+  if (!obj) return json({ error: "upload missing, ask them to resubmit" }, 410);
   const sheetName = `spritesheet.${sub.sheet_ext}`;
-  const dir = `pets/${sub.slug}`;
   await bucket.put(`${dir}/${sheetName}`, obj.body, {
     httpMetadata: { contentType: sub.sheet_ext === "png" ? "image/png" : "image/webp", cacheControl: "public, max-age=31536000, immutable" },
   });
@@ -52,9 +59,12 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }), { httpMetadata: { contentType: "application/json", cacheControl: "public, max-age=31536000, immutable" } });
 
   await setSubmissionStatus(db, id, "approved");
-  try { await bucket.delete(pendingKey); } catch {}
-  await addNotification(db, sub.user_id, "approved", `“${sub.name}” was approved 🎉`,
-    "It's live in the gallery now.", `/pet/${sub.slug}`, sub.slug);
+  // Un-hide if it had been hidden before (e.g. previously deleted by the owner).
+  try { await db.prepare("UPDATE pet_overrides SET hidden=0 WHERE slug=?").bind(sub.slug).run(); } catch {}
+  // Keep the pending upload so a later re-reject + re-approve still works.
+  await clearDecisionNotis();
+  await addNotification(db, sub.user_id, "approved", sub.name,
+    null, `/pet/${sub.slug}`, sub.slug);
   return json({ ok: true, id, status: "approved", slug: sub.slug });
 };
 

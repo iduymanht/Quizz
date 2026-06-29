@@ -493,17 +493,28 @@ const clouds = Array.from({ length: N_CLOUDS }, (_, i) => ({
           return dy ? dy + "d" : h ? h + "h" : m ? m + "m" : "now";
         };
         const setBadge = (n: number) => { if (n > 0) { badge.textContent = n > 99 ? "99+" : String(n); badge.classList.remove("hidden"); } else { badge.classList.add("hidden"); } };
+        // Build localizable title/body. Fixed phrases sit in their own <span> so the
+        // i18n engine translates them; pet name / actor stay untranslated.
+        const render = (n: any) => {
+          const name = esc(n.title), actor = esc(n.body);
+          if (n.type === "approved") return { t: `“${name}” <span>was approved</span> 🎉`, b: `<span>It's live in the gallery now.</span>` };
+          if (n.type === "rejected") return { t: `“${name}” <span>wasn't approved</span>`, b: `<span>Tweak it and submit again any time.</span>` };
+          if (n.type === "like") return { t: `${actor} <span>liked</span> “${name}” ❤️`, b: "" };
+          return { t: name, b: n.body ? esc(n.body) : "" };  // legacy rows
+        };
+        const when = (t: number) => { const a = ago(t); return a === "now" ? `<span>just now</span>` : `${a} <span>ago</span>`; };
         async function load() {
           const d: any = await fetch("/api/notifications.json").then((r) => r.json()).catch(() => ({ items: [], unread: 0 }));
           setBadge(d.unread || 0);
           const items = d.items || [];
           list.innerHTML = items.length
             ? items.map((n: any) => {
+                const r = render(n);
                 const inner = `
                   <div class="flex-1 min-w-0">
-                    <div class="text-sm ${n.read ? "text-muted" : "font-semibold text-ink"}">${esc(n.title)}</div>
-                    ${n.body ? `<div class="text-xs text-faint">${esc(n.body)}</div>` : ""}
-                    <div class="mt-0.5 text-[10px] text-faint">${ago(n.created_at)} ago</div>
+                    <div class="text-sm ${n.read ? "text-muted" : "font-semibold text-ink"}">${r.t}</div>
+                    ${r.b ? `<div class="text-xs text-faint">${r.b}</div>` : ""}
+                    <div class="mt-0.5 text-[10px] text-faint">${when(n.created_at)}</div>
                   </div>
                   ${n.read ? "" : `<span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-rose-500"></span>`}`;
                 return n.link
@@ -511,6 +522,7 @@ const clouds = Array.from({ length: N_CLOUDS }, (_, i) => ({
                   : `<div class="flex items-start gap-2 rounded-xl px-3 py-2">${inner}</div>`;
               }).join("")
             : `<div class="px-3 py-8 text-center text-sm text-faint">No notifications yet.</div>`;
+          (window as any).AP_I18N?.apply?.();  // translate the freshly injected phrases
         }
         bell.addEventListener("click", async (e) => {
           e.stopPropagation();

@@ -46,5 +46,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
 
   await db.prepare("DELETE FROM submissions WHERE id=? AND user_id=?").bind(id, user.id).run();
+  // Drop notifications tied to this pet (approve/reject/like), their links are now dead.
+  try { await db.prepare("DELETE FROM notifications WHERE user_id=? AND slug=?").bind(user.id, sub.slug).run(); } catch {}
   return json({ ok: true });
 };
