@@ -167,7 +167,7 @@ const user = await adminUser(Astro.cookies);
             <div class="mt-5">${actionsHtml(s)}</div>
           </div>`;
         modal.classList.remove("hidden"); modal.classList.add("flex");
-        startAnim(s.previewUrl);
+        startAnim("/api/admin/submission-sprite/" + s.id);
       }
       function closeModal() { stopAnim(); modal.classList.add("hidden"); modal.classList.remove("flex"); }
 
