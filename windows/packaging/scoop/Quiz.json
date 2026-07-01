@@ -1,0 +1,31 @@
+{
+  "version": "0.1.0",
+  "description": "A desktop pet that reacts in real time to your AI coding agents (Claude Code, Codex, Gemini, Cursor, Copilot).",
+  "homepage": "https://github.com/iduymanht/Quiz",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/iduymanht/Quiz/releases/download/win-v0.1.0/Quiz-portable-x64.zip",
+      "hash": "3b0f6f3c0e29dec2b551dd4112cd353cf1f9ad26b7a9710ef2153359f8ff66a7"
+    }
+  },
+  "bin": "Quiz.exe",
+  "shortcuts": [
+    [
+      "Quiz.exe",
+      "Quiz"
+    ]
+  ],
+  "notes": "Run 'Quiz' (or launch from the Start menu shortcut) to start the pet. Open Settings from the tray icon to pick a pet and connect your agents.",
+  "checkver": {
+    "github": "https://github.com/iduymanht/Quiz",
+    "regex": "win-v([\\d.]+)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/iduymanht/Quiz/releases/download/win-v$version/Quiz-portable-x64.zip"
+      }
+    }
+  }
+}

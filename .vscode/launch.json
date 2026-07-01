@@ -4,21 +4,21 @@
       "type": "swift",
       "request": "launch",
       "args": [],
-      "cwd": "${workspaceFolder:agentpet}",
-      "name": "Debug agentpet",
-      "target": "agentpet",
+      "cwd": "${workspaceFolder:Quiz}",
+      "name": "Debug Quiz",
+      "target": "Quiz",
       "configuration": "debug",
-      "preLaunchTask": "swift: Build Debug agentpet"
+      "preLaunchTask": "swift: Build Debug Quiz"
     },
     {
       "type": "swift",
       "request": "launch",
       "args": [],
-      "cwd": "${workspaceFolder:agentpet}",
-      "name": "Release agentpet",
-      "target": "agentpet",
+      "cwd": "${workspaceFolder:Quiz}",
+      "name": "Release Quiz",
+      "target": "Quiz",
       "configuration": "release",
-      "preLaunchTask": "swift: Build Release agentpet"
+      "preLaunchTask": "swift: Build Release Quiz"
     }
   ]
 }

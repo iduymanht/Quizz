@@ -1,7 +1,7 @@
 # Community Pet Gallery — setup (not deployed yet)
 
 Phase 1: web upload + gallery at `/pet`, backed by Cloudflare Pages Functions,
-D1 (metadata) and R2 (files), on the existing `agentpet-landing` Pages project.
+D1 (metadata) and R2 (files), on the existing `Quiz-landing` Pages project.
 Public + auto-publish, with validation, per-IP rate limit, a Report button that
 auto-hides at a threshold, an admin delete endpoint, and a Telegram ping on each
 upload.
@@ -13,16 +13,16 @@ export PATH="/Users/datnt/.n/n/versions/node/22.22.3/bin:$PATH"
 export CLOUDFLARE_ACCOUNT_ID=4dfa59a6cf1ecb9cb737c205fb06e3ce
 
 # 1. R2 bucket for pet files
-npx wrangler r2 bucket create agentpet-pets
+npx wrangler r2 bucket create Quiz-pets
 
 # 2. D1 database, then paste its id into landing/wrangler.toml (database_id)
-npx wrangler d1 create agentpet-pets
-npx wrangler d1 execute agentpet-pets --remote --file=landing/schema.sql
+npx wrangler d1 create Quiz-pets
+npx wrangler d1 execute Quiz-pets --remote --file=landing/schema.sql
 
 # 3. Secrets (Pages project)
-npx wrangler pages secret put ADMIN_KEY          --project-name=agentpet-landing
-npx wrangler pages secret put TELEGRAM_BOT_TOKEN --project-name=agentpet-landing
-npx wrangler pages secret put TELEGRAM_CHAT_ID   --project-name=agentpet-landing
+npx wrangler pages secret put ADMIN_KEY          --project-name=Quiz-landing
+npx wrangler pages secret put TELEGRAM_BOT_TOKEN --project-name=Quiz-landing
+npx wrangler pages secret put TELEGRAM_CHAT_ID   --project-name=Quiz-landing
 ```
 
 For Telegram: create a bot via @BotFather → `TELEGRAM_BOT_TOKEN`; send it a message
@@ -33,14 +33,14 @@ and read `chat.id` from `https://api.telegram.org/bot<token>/getUpdates` → `TE
 ```bash
 export PATH="/Users/datnt/.n/n/versions/node/22.22.3/bin:$PATH"
 export CLOUDFLARE_ACCOUNT_ID=4dfa59a6cf1ecb9cb737c205fb06e3ce
-npx wrangler pages deploy landing --project-name=agentpet-landing --branch=main --commit-dirty=true
+npx wrangler pages deploy landing --project-name=Quiz-landing --branch=main --commit-dirty=true
 ```
 
 ## Local test (no prod)
 
 ```bash
 export PATH="/Users/datnt/.n/n/versions/node/22.22.3/bin:$PATH"
-npx wrangler d1 execute agentpet-pets --local --file=landing/schema.sql
+npx wrangler d1 execute Quiz-pets --local --file=landing/schema.sql
 npx wrangler pages dev landing   # serves on http://localhost:8788, local D1/R2
 ```
 
@@ -54,6 +54,6 @@ npx wrangler pages dev landing   # serves on http://localhost:8788, local D1/R2
 
 ## Phase 2 (later)
 
-Point the app's "Browse pets" at `https://agentpet.thenightwatcher.online/api/pets`
+Point the app's "Browse pets" at `https://Quiz.thenightwatcher.online/api/pets`
 as a second source (reuses `RemotePet` + the existing download flow), then ship an
 app release.

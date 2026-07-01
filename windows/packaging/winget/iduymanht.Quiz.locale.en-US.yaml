@@ -1,0 +1,20 @@
+PackageIdentifier: iduymanht.Quiz
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: iduymanht
+PublisherUrl: https://github.com/iduymanht
+PackageName: Quiz
+PackageUrl: https://github.com/iduymanht/Quiz
+License: MIT
+LicenseUrl: https://github.com/iduymanht/Quiz/blob/main/LICENSE
+ShortDescription: A desktop pet that reacts in real time to your AI coding agents.
+Description: Quiz floats a pixel companion on your desktop that reacts in real time to your AI coding agents (Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, and more) via their hook systems.
+Moniker: Quiz
+Tags:
+  - desktop-pet
+  - ai
+  - cli
+  - claude-code
+  - developer-tools
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

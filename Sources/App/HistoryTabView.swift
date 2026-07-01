@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import QuizCore
 
 struct HistoryTabView: View {
     enum Filter: String, CaseIterable {

@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import AgentPetCore
+import QuizCore
 
 // MARK: - Token types
 
@@ -212,7 +212,7 @@ enum MinStateFilter: String, CaseIterable, Codable {
     }
 
     func includes(_ state: AgentState) -> Bool {
-        // attentionPriority is internal to AgentPetCore — compare states explicitly
+        // attentionPriority is internal to QuizCore — compare states explicitly
         switch self {
         case .all:               return true
         case .doneAndAbove:      return state == .working || state == .waiting || state == .done
@@ -299,7 +299,7 @@ final class BubbleSettings: ObservableObject {
         didSet { ud.set(displayMode.rawValue, forKey: Keys.displayMode) }
     }
     /// When enabled, active sessions render with the structured multi-agent
-    /// bubble. When off, AgentPet keeps the default chat bubble behavior.
+    /// bubble. When off, Quiz keeps the default chat bubble behavior.
     @Published var multiAgentBubbleEnabled: Bool {
         didSet {
             ud.set(multiAgentBubbleEnabled, forKey: Keys.multiAgentBubbleEnabled)
@@ -344,23 +344,23 @@ final class BubbleSettings: ObservableObject {
     private let ud = UserDefaults.standard
 
     private enum Keys {
-        static let customLayout    = "agentpet.bubble.customLayout"
-        static let separatorChar   = "agentpet.bubble.separatorChar"
-        static let fontSize        = "agentpet.bubble.fontSize"
-        static let opacity         = "agentpet.bubble.opacity"
-        static let theme           = "agentpet.bubble.theme"
-        static let dotStyle        = "agentpet.bubble.dotStyle"
-        static let maxSessions     = "agentpet.bubble.maxSessions"
-        static let minStateFilter  = "agentpet.bubble.minStateFilter"
-        static let sessionGrouping     = "agentpet.bubble.sessionGrouping"
-        static let groupByKind         = "agentpet.bubble.groupByKind"
-        static let collapseDuplicates  = "agentpet.bubble.collapseDuplicates" // legacy
-        static let displayMode         = "agentpet.bubble.displayMode"
-        static let multiAgentBubbleEnabled = "agentpet.bubble.multiAgentBubbleEnabled"
-        static let hiddenKinds         = "agentpet.bubble.hiddenKinds"
-        static let iconChoices     = "agentpet.bubble.iconChoices"
-        static let activityTheme   = "agentpet.bubble.activityTheme"
-        static let reactiveBubblesEnabled = "agentpet.bubble.reactiveBubblesEnabled"
+        static let customLayout    = "Quiz.bubble.customLayout"
+        static let separatorChar   = "Quiz.bubble.separatorChar"
+        static let fontSize        = "Quiz.bubble.fontSize"
+        static let opacity         = "Quiz.bubble.opacity"
+        static let theme           = "Quiz.bubble.theme"
+        static let dotStyle        = "Quiz.bubble.dotStyle"
+        static let maxSessions     = "Quiz.bubble.maxSessions"
+        static let minStateFilter  = "Quiz.bubble.minStateFilter"
+        static let sessionGrouping     = "Quiz.bubble.sessionGrouping"
+        static let groupByKind         = "Quiz.bubble.groupByKind"
+        static let collapseDuplicates  = "Quiz.bubble.collapseDuplicates" // legacy
+        static let displayMode         = "Quiz.bubble.displayMode"
+        static let multiAgentBubbleEnabled = "Quiz.bubble.multiAgentBubbleEnabled"
+        static let hiddenKinds         = "Quiz.bubble.hiddenKinds"
+        static let iconChoices     = "Quiz.bubble.iconChoices"
+        static let activityTheme   = "Quiz.bubble.activityTheme"
+        static let reactiveBubblesEnabled = "Quiz.bubble.reactiveBubblesEnabled"
     }
 
     init() {

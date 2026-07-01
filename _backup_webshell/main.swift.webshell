@@ -1,0 +1,268 @@
+import AppKit
+import WebKit
+
+// Quiz Pet (macOS) — a desktop pet overlay that shows a quiz above the pet's
+// head. Right-clicking the pet opens the Settings window (Pet chooser + question
+// builder). UI is web (overlay.html / settings.html), shared with the Windows
+// build, served over a custom URL scheme so fetch() and canvas slicing work.
+//
+// DIAGNOSTIC BUILD: verbose logging to /tmp/quiz-debug.log and a visible,
+// centered opaque window, so we can pin down why nothing appears.
+
+// MARK: - File logger (survives even if stderr is not visible)
+
+let LOG_PATH = "/tmp/quiz-debug.log"
+func dlog(_ msg: String) {
+    let line = "[\(Date())] \(msg)\n"
+    NSLog("[Quiz] \(msg)")
+    if let data = line.data(using: .utf8) {
+        if let fh = FileHandle(forWritingAtPath: LOG_PATH) {
+            fh.seekToEndOfFile(); fh.write(data); fh.closeFile()
+        } else {
+            try? line.data(using: .utf8)?.write(to: URL(fileURLWithPath: LOG_PATH))
+        }
+    }
+}
+
+// fresh log each launch
+try? "".data(using: .utf8)?.write(to: URL(fileURLWithPath: LOG_PATH))
+dlog("=== launch: main start ===")
+
+private let SCHEME = "quizapp"
+
+let app = NSApplication.shared
+let delegate = AppDelegate()
+app.delegate = delegate
+app.setActivationPolicy(.accessory) // menu-bar app; the pet floats, no Dock icon
+dlog("main: about to run()")
+app.run()
+
+// MARK: - Custom scheme handler
+
+final class WebSchemeHandler: NSObject, WKURLSchemeHandler {
+    let root: URL
+    init(root: URL) { self.root = root }
+
+    func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
+        guard let url = task.request.url else { task.didFailWithError(URLError(.badURL)); return }
+        var rel = url.path
+        if rel.hasPrefix("/") { rel.removeFirst() }
+        if rel.isEmpty { rel = "overlay.html" }
+        let fileURL = root.appendingPathComponent(rel)
+        guard let data = try? Data(contentsOf: fileURL) else {
+            dlog("scheme: 404 for \(rel)")
+            let resp = HTTPURLResponse(url: url, statusCode: 404, httpVersion: nil, headerFields: nil)!
+            task.didReceive(resp); task.didFinish(); return
+        }
+        let headers = ["Content-Type": Self.mime(fileURL.pathExtension),
+                       "Access-Control-Allow-Origin": "*"]
+        let resp = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)!
+        task.didReceive(resp); task.didReceive(data); task.didFinish()
+    }
+
+    func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
+
+    static func mime(_ ext: String) -> String {
+        switch ext.lowercased() {
+        case "html": return "text/html; charset=utf-8"
+        case "js":   return "text/javascript; charset=utf-8"
+        case "json": return "application/json; charset=utf-8"
+        case "css":  return "text/css; charset=utf-8"
+        case "webp": return "image/webp"
+        case "png":  return "image/png"
+        case "jpg", "jpeg": return "image/jpeg"
+        case "svg":  return "image/svg+xml"
+        default:      return "application/octet-stream"
+        }
+    }
+}
+
+final class KeyableWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
+// MARK: - App delegate
+
+final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate {
+    private var overlayWindow: NSWindow?
+    private var settingsWindow: NSWindow?
+    private var overlayWebView: WKWebView?
+    private var statusItem: NSStatusItem?
+
+    override init() { super.init(); dlog("AppDelegate init") }
+
+    // Resolve the bundled web/ directory WITHOUT Bundle.module (which fatalErrors
+    // if it can't find the bundle). Search likely locations and log each.
+    private lazy var webRoot: URL = resolveWebRoot()
+    private func resolveWebRoot() -> URL {
+        let exeDir = URL(fileURLWithPath: CommandLine.arguments.first ?? "")
+            .deletingLastPathComponent()
+        var candidates: [URL] = []
+        if let r = Bundle.main.resourceURL { candidates.append(r.appendingPathComponent("web")) }
+        candidates.append(Bundle.main.bundleURL.appendingPathComponent("web"))
+        for base in [Bundle.main.bundleURL, exeDir] {
+            candidates.append(base.appendingPathComponent("Quiz_Quiz.bundle/Contents/Resources/web"))
+            candidates.append(base.appendingPathComponent("Quiz_Quiz.bundle/web"))
+        }
+        for c in candidates {
+            let exists = FileManager.default.fileExists(atPath: c.appendingPathComponent("overlay.html").path)
+            dlog("webRoot candidate exists=\(exists): \(c.path)")
+            if exists { return c }
+        }
+        dlog("webRoot: NONE found, defaulting to first candidate")
+        return candidates.first ?? exeDir
+    }
+    private lazy var schemeHandler = WebSchemeHandler(root: webRoot)
+
+    private var questionsFile: URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSTemporaryDirectory())
+        let dir = base.appendingPathComponent("Quiz", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent("questions.json")
+    }
+    private func readQuestionsJSON() -> String { (try? String(contentsOf: questionsFile, encoding: .utf8)) ?? "[]" }
+    private func writeQuestionsJSON(_ json: String) { try? json.data(using: .utf8)?.write(to: questionsFile) }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        dlog("didFinishLaunching: begin")
+        setupStatusItem()
+        dlog("didFinishLaunching: status item done")
+        showOverlay()
+        dlog("didFinishLaunching: showOverlay returned")
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
+    // MARK: WebView factory
+
+    private func makeWebView(page: String, transparent: Bool) -> WKWebView {
+        dlog("makeWebView: page=\(page) webRoot=\(webRoot.path)")
+        let config = WKWebViewConfiguration()
+        config.websiteDataStore = .default()
+        config.userContentController.add(self, name: "quiz")
+        config.setURLSchemeHandler(schemeHandler, forURLScheme: SCHEME)
+        let webView = WKWebView(frame: .zero, configuration: config)
+        webView.navigationDelegate = self
+        if transparent { webView.setValue(false, forKey: "drawsBackground") }
+        if let url = URL(string: "\(SCHEME)://local/\(page)") {
+            dlog("makeWebView: loading \(url.absoluteString)")
+            webView.load(URLRequest(url: url))
+        }
+        return webView
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        dlog("didFinish load: \(webView.url?.absoluteString ?? "?")")
+    }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        dlog("didFailProvisionalNavigation: \(error.localizedDescription)")
+        let page = webView.url?.lastPathComponent ?? "overlay.html"
+        let fileURL = webRoot.appendingPathComponent(page)
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            dlog("fallback to file:// for \(page)")
+            webView.loadFileURL(fileURL, allowingReadAccessTo: webRoot)
+        }
+    }
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        dlog("didFail: \(error.localizedDescription)")
+    }
+
+    // MARK: Overlay
+
+    private func showOverlay() {
+        if let w = overlayWindow { w.makeKeyAndOrderFront(nil); return }
+        dlog("showOverlay: creating window")
+        let size = NSSize(width: 600, height: 460)
+        // Transparent, borderless, always-on-top desktop pet overlay.
+        let window = KeyableWindow(contentRect: NSRect(origin: .zero, size: size),
+                                   styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = false
+        window.level = .floating
+        window.isMovableByWindowBackground = true
+        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        let wv = makeWebView(page: "overlay.html", transparent: true)
+        overlayWebView = wv
+        window.contentView = wv
+        if let screen = NSScreen.main {
+            let vf = screen.visibleFrame
+            window.setFrameOrigin(NSPoint(x: vf.maxX - size.width - 24, y: vf.minY + 24))
+        }
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+        overlayWindow = window
+        dlog("showOverlay: window shown, visible=\(window.isVisible)")
+    }
+
+    private func toggleOverlay() {
+        guard let w = overlayWindow else { showOverlay(); return }
+        if w.isVisible { w.orderOut(nil) } else { w.makeKeyAndOrderFront(nil) }
+    }
+
+    // MARK: Settings
+
+    private func showSettings() {
+        if let w = settingsWindow { w.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true); return }
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 980, height: 760),
+                              styleMask: [.titled, .closable, .miniaturizable, .resizable],
+                              backing: .buffered, defer: false)
+        window.title = "Quiz — Cài đặt"
+        window.center()
+        window.contentView = makeWebView(page: "settings.html", transparent: false)
+        window.isReleasedWhenClosed = false
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        settingsWindow = window
+    }
+
+    // MARK: Status bar
+
+    private func setupStatusItem() {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        item.button?.title = "Quiz"
+        let menu = NSMenu()
+        let toggle = menu.addItem(withTitle: "Hiện / Ẩn Pet", action: #selector(menuToggleOverlay), keyEquivalent: "p")
+        toggle.target = self
+        let settings = menu.addItem(withTitle: "Cài đặt…", action: #selector(menuShowSettings), keyEquivalent: ",")
+        settings.target = self
+        menu.addItem(.separator())
+        let quit = menu.addItem(withTitle: "Thoát", action: #selector(menuQuit), keyEquivalent: "q")
+        quit.target = self
+        item.menu = menu
+        statusItem = item
+    }
+
+    @objc private func menuToggleOverlay() { toggleOverlay() }
+    @objc private func menuShowSettings() { showSettings() }
+    @objc private func menuQuit() { NSApp.terminate(nil) }
+
+    // MARK: JS bridge
+
+    func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let body = message.body as? [String: Any], let action = body["action"] as? String else { return }
+        switch action {
+        case "openSettings", "openBuilder":
+            showSettings()
+        case "saveQuestions":
+            let json = (body["json"] as? String) ?? "[]"
+            writeQuestionsJSON(json)
+            overlayWebView?.evaluateJavaScript("window.__quizReload && window.__quizReload(\(json))", completionHandler: nil)
+        case "loadQuestions":
+            let json = readQuestionsJSON()
+            message.webView?.evaluateJavaScript("window.__quizDeliver && window.__quizDeliver(\(json))", completionHandler: nil)
+        case "petChanged":
+            if let slug = body["slug"] as? String {
+                overlayWebView?.evaluateJavaScript("window.__petReload && window.__petReload('\(slug)')", completionHandler: nil)
+            }
+        case "petResize":
+            if let size = body["size"] as? Int {
+                overlayWebView?.evaluateJavaScript("window.__petResize && window.__petResize(\(size))", completionHandler: nil)
+            }
+        default:
+            break
+        }
+    }
+}

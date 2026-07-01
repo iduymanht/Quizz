@@ -1,10 +1,10 @@
 import AppKit
 import Foundation
-import AgentPetCore
+import QuizCore
 
 /// Pushes per-pet care stats to the community site so the user's web profile
 /// shows their companions' levels. Linked once by signing in with GitHub in
-/// the browser (the site bounces back via `agentpet://link`); afterwards stats
+/// the browser (the site bounces back via `Quiz://link`); afterwards stats
 /// sync in the background (debounced after each feeding, and on launch).
 @MainActor
 final class CareSyncController: ObservableObject {
@@ -20,9 +20,9 @@ final class CareSyncController: ObservableObject {
     /// True while a cloud restore is in flight (for the Care tab button).
     @Published private(set) var restoring = false
 
-    private static let tokenKey = "agentpet.care.syncToken"
-    private static let loginKey = "agentpet.care.syncLogin"
-    static let base = URL(string: "https://agentpet.thenightwatcher.online")!
+    private static let tokenKey = "Quiz.care.syncToken"
+    private static let loginKey = "Quiz.care.syncLogin"
+    static let base = URL(string: "https://Quiz.thenightwatcher.online")!
 
     private var debounce: Timer?
     private var failCount = 0
@@ -39,13 +39,13 @@ final class CareSyncController: ObservableObject {
 
     // MARK: - Linking
 
-    /// Opens the site's sign-in flow; it ends with an `agentpet://link` bounce
+    /// Opens the site's sign-in flow; it ends with an `Quiz://link` bounce
     /// handled by the app delegate, which calls `adopt`.
     func beginLink() {
         NSWorkspace.shared.open(Self.base.appendingPathComponent("link-app"))
     }
 
-    /// Stores the device token delivered by the `agentpet://link` URL.
+    /// Stores the device token delivered by the `Quiz://link` URL.
     func adopt(token: String, login: String) {
         UserDefaults.standard.set(token, forKey: Self.tokenKey)
         if login.isEmpty {

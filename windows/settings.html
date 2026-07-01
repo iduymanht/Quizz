@@ -1,436 +1,447 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>AgentPet</title>
-    <link rel="stylesheet" href="/src/styles.css" />
-  </head>
-  <body class="settings">
-    <div class="shell">
-    <div class="main-col">
-    <!-- macOS preferences-style tab bar -->
-    <nav class="tabbar">
-      <button class="tab sel" data-tab="general">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-        <span id="tab-general">General</span>
-      </button>
-      <button class="tab" data-tab="pet">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.2" cy="10.2" r="2.1"/><circle cx="9.3" cy="6.4" r="2.2"/><circle cx="14.7" cy="6.4" r="2.2"/><circle cx="18.8" cy="10.2" r="2.1"/><path d="M12 10.5c-2.6 0-5.4 2.5-5.4 5 0 1.6 1.2 2.6 2.7 2.6 1 0 1.8-.4 2.7-.4s1.7.4 2.7.4c1.5 0 2.7-1 2.7-2.6 0-2.5-2.8-5-5.4-5z"/></svg>
-        <span id="tab-pet">Pet</span>
-      </button>
-      <button class="tab" data-tab="bubble">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 6.75A3.25 3.25 0 0 1 4.75 3.5h7A3.25 3.25 0 0 1 15 6.75v3.5a3.25 3.25 0 0 1-3.25 3.25H8.6l-3.35 2.8a.5.5 0 0 1-.82-.38V13.5h.32A3.25 3.25 0 0 1 1.5 10.25v-3.5z"/><path d="M16.4 7.9h1.35a4.75 4.75 0 0 1 4.75 4.75v1.6a4.75 4.75 0 0 1-4.05 4.7v2.17a.5.5 0 0 1-.83.37l-2.86-2.49h-2.51a4.74 4.74 0 0 1-3.92-2.07h3.42a4.65 4.65 0 0 0 4.65-4.65V7.9z"/></svg>
-        <span id="tab-bubble">Bubble</span>
-      </button>
-      <button class="tab" data-tab="about">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <span id="tab-about">About</span>
-      </button>
-    </nav>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz — Cài đặt</title>
+<style>
+  :root {
+    --bg: #0f1220; --panel: #171a2b; --panel-2: #1e2236; --border: #2a2f47;
+    --text: #e7e9f3; --muted: #9aa0bd; --brand: #4da3ff; --brand-2: #8fd0ff;
+    --ok: #34d399; --ok-bg: rgba(52,211,153,.12); --danger: #ff6b6b;
+    --radius: 12px; --shadow: 0 8px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #1b2140 0%, var(--bg) 55%);
+    color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 20px 18px 60px; }
+  header.app { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header.app .logo { width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; font-size: 22px; box-shadow: var(--shadow); }
+  header.app h1 { font-size: 19px; margin: 0; }
+  header.app p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
 
-    <main class="pages">
-      <!-- ============================== GENERAL ============================== -->
-      <div class="page sel" data-page="general">
-        <div class="group">
-          <div class="ghead" id="t-lang">Language</div>
-          <div class="gcard">
-            <div class="row"><span id="t-lang2">Language</span>
-              <select id="lang">
-                <option value="en">English</option>
-                <option value="vi">Tiếng Việt</option>
-                <option value="zh">中文</option>
-              </select></div>
-          </div>
-        </div>
+  .tabs { display: flex; gap: 6px; background: var(--panel); padding: 6px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 18px; }
+  .tabs button { flex: 1; appearance: none; border: 0; cursor: pointer; padding: 10px 14px; border-radius: 8px;
+    background: transparent; color: var(--muted); font-size: 14px; font-weight: 600; transition: .15s; }
+  .tabs button.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
 
-        <div class="group">
-          <div class="ghead" id="t-startup">Launch</div>
-          <div class="gcard">
-            <label class="row"><span class="rt"><span id="t-autostart">Launch at login</span>
-              <span class="cap" id="t-autostart-sub">AgentPet starts automatically when you sign in.</span></span>
-              <input type="checkbox" id="autostart" /></label>
-          </div>
-        </div>
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .field { margin-bottom: 14px; }
+  label.lbl { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  textarea, input[type=text] { width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; resize: vertical; }
+  textarea:focus, input[type=text]:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(77, 163, 255,.2); }
+  textarea.q { min-height: 60px; }
 
-        <div class="group">
-          <div class="ghead" id="t-notif">Notifications</div>
-          <div class="gcard">
-            <label class="row"><span class="rt"><span id="t-notify">Notifications on</span>
-              <span class="cap" id="t-notify-sub">Alerts when an agent finishes or needs input</span></span>
-              <input type="checkbox" id="notify" /></label>
-          </div>
-        </div>
+  .answers { display: grid; gap: 8px; }
+  .answer-row { display: flex; align-items: center; gap: 10px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 9px; padding: 6px 10px 6px 6px; }
+  .answer-row.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .answer-row .tick { display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 4px 8px;
+    border-radius: 7px; cursor: pointer; user-select: none; font-size: 12px; color: var(--muted); }
+  .answer-row.correct .tick { color: var(--ok); font-weight: 700; }
+  .answer-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--ok); cursor: pointer; }
+  .answer-row input[type=text] { border: 0; background: transparent; padding: 8px 4px; }
+  .answer-row input[type=text]:focus { box-shadow: none; }
+  .answer-badge { width: 24px; text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; }
 
-        <div class="group">
-          <div class="ghead" id="t-sounds">Sounds</div>
-          <div class="gcard">
-            <div class="sound-block">
-              <label class="row"><span id="t-sound-done">When an agent finishes</span><input type="checkbox" id="sound-done" /></label>
-              <div class="row tight sound-sub" data-ev="done">
-                <span class="cap sound-name" id="sound-done-name">Default</span>
-                <span class="sound-btns">
-                  <button class="mini ic-btn" data-act="play" data-ev="done"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 21 12 6 21 6 3"/></svg></button>
-                  <button class="mini" data-act="upload" data-ev="done" id="t-up-done">Upload…</button>
-                  <button class="mini" data-act="reset" data-ev="done" id="t-df-done" style="display:none">Default</button>
-                </span>
-              </div>
-            </div>
-            <div class="sound-block">
-              <label class="row"><span id="t-sound-waiting">When an agent needs input</span><input type="checkbox" id="sound-waiting" /></label>
-              <div class="row tight sound-sub" data-ev="waiting">
-                <span class="cap sound-name" id="sound-waiting-name">Default</span>
-                <span class="sound-btns">
-                  <button class="mini ic-btn" data-act="play" data-ev="waiting"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 21 12 6 21 6 3"/></svg></button>
-                  <button class="mini" data-act="upload" data-ev="waiting" id="t-up-waiting">Upload…</button>
-                  <button class="mini" data-act="reset" data-ev="waiting" id="t-df-waiting" style="display:none">Default</button>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+  .btn { appearance: none; border: 0; cursor: pointer; border-radius: 9px; padding: 11px 16px; font-size: 14px; font-weight: 700; transition: .15s; }
+  .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--brand); }
+  .btn.sm { padding: 7px 11px; font-size: 12px; }
+  .btn.danger { color: var(--danger); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .row.end { justify-content: flex-end; }
+  .spacer { flex: 1; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0 10px; flex-wrap: wrap; }
+  .count-pill { background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
 
-        <div class="group">
-          <div class="ghead" id="t-agents">Agent integrations</div>
-          <div class="gcard" id="agents"></div>
-        </div>
+  .qlist { display: grid; gap: 10px; margin-top: 4px; }
+  .qcard { background: var(--panel-2); border: 1px solid var(--border); border-radius: 11px; padding: 13px 14px; }
+  .qcard .qtop { display: flex; gap: 10px; align-items: flex-start; }
+  .qcard .num { width: 24px; height: 24px; flex: none; border-radius: 7px; background: var(--brand); color: white; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .qcard .qtext { font-weight: 600; flex: 1; }
+  .qcard .opts { margin: 9px 0 0 34px; display: grid; gap: 4px; }
+  .qcard .opt { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .qcard .opt.correct { color: var(--ok); font-weight: 600; }
+  .qcard .opt .mk { width: 16px; }
+  .qcard .expl { margin: 9px 0 0 34px; font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--border); padding-left: 10px; }
+  .qcard .acts { display: flex; gap: 6px; }
+  .empty { text-align: center; color: var(--muted); padding: 26px; font-size: 13.5px; }
 
-        <div class="group">
-          <div class="ghead" id="t-app">About</div>
-          <div class="gcard">
-            <div class="row"><span id="t-version">Version</span><span class="dim" id="app-version">0.1.0</span></div>
-            <div class="row center"><button class="quit" id="quit-btn">Quit AgentPet</button></div>
-          </div>
-        </div>
+  .md-help { background: var(--panel-2); border: 1px dashed var(--border); border-radius: 9px; padding: 12px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .md-help code { background: #0c0e18; padding: 1px 6px; border-radius: 5px; color: #cfd3f2; font-size: 12px; }
+  pre.fmt { background: #0c0e18; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow:auto; color: #cfd3f2; font-size: 12px; margin: 8px 0 0; }
+  textarea.md { min-height: 220px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+
+  /* Pet tab */
+  .petgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+  .petcard { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center;
+    cursor: pointer; transition: .12s; }
+  .petcard:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .petcard.selected { border-color: var(--ok); box-shadow: 0 0 0 2px rgba(52,211,153,.25); }
+  .petcard canvas { width: 84px; height: 84px; }
+  .petcard .nm { margin-top: 6px; font-size: 13px; font-weight: 700; }
+  .petcard .sel { font-size: 11px; color: var(--ok); font-weight: 700; height: 14px; }
+  .switchrow { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; }
+  .switchrow .desc { font-size: 12.5px; color: var(--muted); }
+  .about { font-size: 13.5px; color: var(--muted); }
+  .about b { color: var(--text); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel-2);
+    border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: 10px; box-shadow: var(--shadow);
+    opacity: 0; transition: .25s; pointer-events: none; font-size: 13px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hidden { display: none !important; }
+  .err { color: var(--danger); font-size: 12.5px; margin-top: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="logo">⚙️</div>
+    <div>
+      <h1>Cài đặt Quiz Pet</h1>
+      <p>Chọn pet, tùy chọn hiển thị, và soạn câu hỏi</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="mtab-pet" class="active" onclick="switchMain('pet')">🐾 Pet</button>
+    <button id="mtab-quiz" onclick="switchMain('quiz')">✏️ Soạn câu hỏi</button>
+    <button id="mtab-about" onclick="switchMain('about')">ℹ️ Giới thiệu</button>
+  </div>
+
+  <!-- PET TAB -->
+  <section id="main-pet" class="panel">
+    <div class="field">
+      <label class="lbl">Chọn pet hiển thị trên màn hình (<span id="petCount">0</span> pet)</label>
+      <input type="text" id="petSearch" placeholder="Tìm pet theo tên…" oninput="renderPets()" style="margin-bottom:12px" />
+      <div class="petgrid" id="petgrid"></div>
+    </div>
+    <div class="switchrow">
+      <div><b>Kích thước pet</b><div class="desc">Phóng to / thu nhỏ pet trên màn hình.</div></div>
+      <div class="row">
+        <button class="btn ghost sm" onclick="setPetSize(96)">S</button>
+        <button class="btn ghost sm" onclick="setPetSize(132)">M</button>
+        <button class="btn ghost sm" onclick="setPetSize(180)">L</button>
+        <input type="range" id="petSize" min="80" max="220" step="4" oninput="setPetSize(this.value)" style="width:140px" />
       </div>
+    </div>
+    <div class="switchrow">
+      <div><b>Hoạt ảnh pet</b><div class="desc">Bật/tắt chuyển động khung hình của pet.</div></div>
+      <label class="tick"><input type="checkbox" id="animToggle" onchange="toggleAnim(this.checked)" /> Bật</label>
+    </div>
+  </section>
 
-      <!-- ================================ PET ================================ -->
-      <div class="page" data-page="pet">
-        <div class="group">
-          <div class="gcard hero">
-            <canvas id="hero-thumb" width="84" height="84"></canvas>
-            <div class="hero-meta">
-              <div class="hero-name" id="pet-current">…</div>
-              <div class="cap" id="hero-desc"><span id="t-pet-sub">Pick the companion that floats on your desktop.</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-choose">Choose pet</div>
-          <div class="gcard pad">
-            <div class="search-wrap" id="pet-search-wrap" style="display:none"><span class="mag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><input id="pet-search" type="text" placeholder="Search your pets" autocomplete="off" /></div>
-            <div id="lib-empty" class="cap" style="padding: 6px 0" hidden><span id="t-lib-empty">No pets yet. Tap Browse to add one.</span></div>
-            <div id="pet-results" class="pet-results"></div>
-            <div class="pager-nav" id="pet-pager">
-              <button id="pg-prev">‹</button>
-              <span id="pg-ind" class="pg-ind"></span>
-              <button id="pg-next">›</button>
-            </div>
-            <div class="two-btns">
-              <button class="small-btn" id="open-browse"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span id="t-browse">Browse pets…</span></button>
-              <button class="small-btn" id="open-create"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></span><span id="t-create">Create pet…</span></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-anims">Animations</div>
-          <div class="gcard pad">
-            <span class="seg" id="anim-mood">
-              <button data-v="idle" id="am-idle">Idle</button>
-              <button data-v="working" class="sel" id="am-working">Working</button>
-              <button data-v="waiting" id="am-waiting">Waiting</button>
-              <button data-v="done" id="am-done">Done</button>
-              <button data-v="celebrate" id="am-celebrate">Celebrate</button>
-            </span>
-            <div class="cap" id="t-anim-hint" style="margin: 8px 0 6px">Hover a clip to preview it.</div>
-            <div id="anim-grid" class="anim-grid"></div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-size">Size on screen</div>
-          <div class="gcard">
-            <div class="row"><span class="slider-wrap wide"><input type="range" id="pet-size" min="70" max="130" /><span class="val dim" id="pet-size-val"></span>
-              <span class="size-presets"><button data-size="80">S</button><button data-size="100">M</button><button data-size="125">L</button></span></span></div>
-          </div>
-        </div>
+  <!-- QUIZ (BUILDER) TAB -->
+  <section id="main-quiz" class="hidden">
+    <div class="tabs">
+      <button id="tab-form" class="active" onclick="switchTab('form')">Form</button>
+      <button id="tab-md" onclick="switchTab('md')">Markdown</button>
+    </div>
+    <section id="panel-form" class="panel">
+      <div class="field">
+        <label class="lbl">Câu hỏi</label>
+        <textarea id="f-question" class="q" placeholder="Nhập nội dung câu hỏi..."></textarea>
       </div>
-
-      <!-- =============================== BUBBLE ============================== -->
-      <div class="page" data-page="bubble">
-        <div class="group">
-          <div class="ghead" id="t-bubmode">Bubble mode</div>
-          <div class="gcard">
-            <label class="row"><span class="rt"><span id="t-multi">Multi-agent bubble</span>
-              <span class="cap" id="t-multi-sub">Structured rows with icons, state dots, and activity messages.</span></span>
-              <input type="checkbox" id="multi" /></label>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-appearance">Appearance</div>
-          <div class="gcard">
-            <div class="row"><span id="t-theme">Theme</span>
-              <span class="seg" id="theme" data-key="ap_theme" data-default="dark">
-                <button data-v="light" id="o-light">Light</button>
-                <button data-v="dark" id="o-dark">Dark</button>
-                <button data-v="system" id="o-theme-system">System</button>
-              </span></div>
-            <div class="row"><span id="t-fontsize">Font size</span>
-              <span class="seg" id="font-size-seg" data-key="ap_font_size" data-default="12">
-                <button data-v="10">S</button>
-                <button data-v="12">M</button>
-                <button data-v="14">L</button>
-              </span></div>
-            <div class="row"><span id="t-opacity">Opacity</span>
-              <span class="slider-wrap"><input type="range" id="opacity" min="60" max="100" /><span class="val dim" id="opacity-val"></span></span></div>
-            <label class="row"><span class="rt"><span id="t-idle">Show idle message</span>
-              <span class="cap" id="t-idle-sub">The pet's chatter while no agent is running.</span></span>
-              <input type="checkbox" id="idle" /></label>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-display">Display</div>
-          <div class="gcard">
-            <div class="row col"><span class="stack-label" id="t-rows">Rows</span>
-              <span class="seg" id="bub-mode" data-key="ap_bub_mode" data-default="carousel">
-                <button data-v="list" id="o-bm-list">All rows</button>
-                <button data-v="carousel" id="o-bm-carousel">Carousel</button>
-                <button data-v="compact" id="o-bm-compact">Compact</button>
-              </span>
-              <div class="cap" id="bub-mode-detail"></div></div>
-            <div class="row col"><span class="stack-label" id="t-grouping">Sessions</span>
-              <span class="seg" id="bub-grouping" data-key="ap_bub_grouping" data-default="byKind">
-                <button data-v="byKind" id="o-bg-kind">Grouped by agent</button>
-                <button data-v="all" id="o-bg-all">All sessions</button>
-              </span>
-              <div class="cap" id="bub-grouping-detail"></div></div>
-            <div class="row" id="maxrows-row"><span id="t-maxrows">Max rows</span>
-              <span class="slider-wrap"><input type="range" id="bub-max" min="1" max="10" /><span class="val dim" id="bub-max-val"></span></span></div>
-            <label class="row" id="sortkind-row"><span id="t-sortkind">Sort by agent kind</span><input type="checkbox" id="bub-sortkind" /></label>
-            <div class="row"><span id="t-filter">Include states</span>
-              <select id="bub-filter">
-                <option value="all" id="o-bf-all">All states</option>
-                <option value="doneAndAbove" id="o-bf-done">Done and above</option>
-                <option value="workingAndWaiting" id="o-bf-ww">Working &amp; Waiting</option>
-                <option value="workingOnly" id="o-bf-w">Working only</option>
-              </select></div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-visible">Visible agents</div>
-          <div class="gcard" id="bub-visible"></div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-rowcontent">Row content</div>
-          <div class="gcard pad">
-            <div class="cap" id="t-preview-cap" style="margin-bottom:5px">Preview</div>
-            <div id="bub-preview" class="bub-preview"></div>
-            <div id="bub-palette" class="bub-tokens"></div>
-            <div id="bub-tokens" class="bub-tokens"></div>
-            <div class="row tight"><span class="cap" id="t-presets">Presets</span>
-              <span class="preset-btns">
-                <button data-preset="original" id="t-pr-original">Original</button>
-                <button data-preset="standard" id="t-pr-standard">Standard</button>
-                <button data-preset="detailed" id="t-pr-detailed">Detailed</button>
-              </span></div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-agenticons">Agent icons</div>
-          <div class="gcard" id="agent-icons"></div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-style">Style</div>
-          <div class="gcard">
-            <div class="row"><span id="t-separator">Separator</span>
-              <span class="seg" id="bub-sep" data-key="ap_bub_sep" data-default="·">
-                <button data-v="·">·</button>
-                <button data-v="→">→</button>
-                <button data-v="|">|</button>
-                <button data-v=" " id="o-sep-space">space</button>
-              </span></div>
-            <div class="row"><span id="t-dotstyle">State dot</span>
-              <span class="seg" id="bub-dot" data-key="ap_bub_dot" data-default="plain">
-                <button data-v="plain" id="o-dot-plain">Plain dot</button>
-                <button data-v="claude" id="o-dot-claude">Claude style</button>
-              </span></div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-activity">Activity messages</div>
-          <div class="gcard">
-            <div class="row"><span id="t-phrases">Vocabulary</span>
-              <select id="phrases">
-                <option value="chef" id="o-ph-chef">👨‍🍳 Chef</option>
-                <option value="engineer" id="o-ph-engineer">⚙️ Engineer</option>
-                <option value="wizard" id="o-ph-wizard">🧙 Wizard</option>
-                <option value="explorer" id="o-ph-explorer">🧭 Explorer</option>
-                <option value="scientist" id="o-ph-scientist">🔬 Scientist</option>
-              </select></div>
-          </div>
-          <div class="cap gfoot" id="t-vocab-foot">Whimsical phrases shown while agents work, e.g. "Brewing…" or "Compiling…".</div>
-        </div>
-
-        <div class="group">
-          <div class="ghead" id="t-messages">Bubble messages</div>
-          <div class="gcard pad">
-            <div class="row tight"><span id="t-msg-src">Messages</span>
-              <span class="seg" id="msg-src" data-key="ap_msg_src" data-default="system">
-                <button data-v="system" id="o-ms-system">System</button>
-                <button data-v="custom" id="o-ms-custom">Custom</button>
-              </span></div>
-            <div id="msg-custom-wrap">
-              <div class="row tight"><span id="t-msg-agent">Agent</span><select id="msg-agent"></select></div>
-              <div id="msg-editors"></div>
-              <div class="row tight"><span class="cap" id="t-msg-help">One message per line; a random one is shown.</span>
-                <button class="mini" id="msg-reset">Reset to defaults</button></div>
-            </div>
-          </div>
-          <div class="cap gfoot" id="t-msg-foot">Per-agent overrides win over "All agents". A custom line replaces the live/theme text and the real pet honours it.</div>
-        </div>
+      <div class="field">
+        <label class="lbl">Đáp án (tích ô bên phải để đánh dấu đáp án đúng)</label>
+        <div class="answers" id="f-answers"></div>
       </div>
-
-      <!-- =============================== ABOUT =============================== -->
-      <div class="page" data-page="about">
-        <div class="group">
-          <div class="gcard about-hero">
-            <svg viewBox="0 0 24 24" fill="currentColor" class="about-paw"><circle cx="5.2" cy="10.2" r="2.1"/><circle cx="9.3" cy="6.4" r="2.2"/><circle cx="14.7" cy="6.4" r="2.2"/><circle cx="18.8" cy="10.2" r="2.1"/><path d="M12 10.5c-2.6 0-5.4 2.5-5.4 5 0 1.6 1.2 2.6 2.7 2.6 1 0 1.8-.4 2.7-.4s1.7.4 2.7.4c1.5 0 2.7-1 2.7-2.6 0-2.5-2.8-5-5.4-5z"/></svg>
-            <div class="about-title">AgentPet</div>
-            <div class="cap" id="t-tagline">A desktop pet that watches your AI coding agents.</div>
-          </div>
-        </div>
-        <div class="group">
-          <div class="gcard pad btns">
-            <button class="prominent pill" data-url="https://github.com/ntd4996/agentpet"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></span><span id="t-star">Star on GitHub</span></button>
-            <button class="ghost-btn pill" data-url="https://discord.gg/kzFJKsZav"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 6.75A3.25 3.25 0 0 1 4.75 3.5h7A3.25 3.25 0 0 1 15 6.75v3.5a3.25 3.25 0 0 1-3.25 3.25H8.6l-3.35 2.8a.5.5 0 0 1-.82-.38V13.5h.32A3.25 3.25 0 0 1 1.5 10.25v-3.5z"/><path d="M16.4 7.9h1.35a4.75 4.75 0 0 1 4.75 4.75v1.6a4.75 4.75 0 0 1-4.05 4.7v2.17a.5.5 0 0 1-.83.37l-2.86-2.49h-2.51a4.74 4.74 0 0 1-3.92-2.07h3.42a4.65 4.65 0 0 0 4.65-4.65V7.9z"/></svg></span><span id="t-discord">Join the Discord</span></button>
-            <button class="ghost-btn pill" data-url="https://buymeacoffee.com/ntd4996"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span><span id="t-coffee">Buy me a coffee</span></button>
-          </div>
-          <div class="cap gfoot" id="t-thanks">If AgentPet helps your workflow, a star means a lot. Thank you!</div>
-        </div>
-        <div class="group">
-          <div class="ghead" id="t-author">Author</div>
-          <div class="gcard">
-            <div class="row link" data-url="https://github.com/ntd4996"><span class="alink">👤 Nguyễn Thành Đạt (@ntd4996)</span><span class="dim">↗</span></div>
-            <div class="row link" data-url="https://github.com/ntd4996/agentpet"><span class="alink">&lt;/&gt; github.com/ntd4996/agentpet</span><span class="dim">↗</span></div>
-          </div>
-        </div>
-        <div class="group">
-          <div class="gcard">
-            <div class="row"><span id="t-version2">Version</span><span class="dim" id="app-version2">0.1.0</span></div>
-          </div>
-        </div>
+      <div class="field">
+        <label class="lbl">Giải thích (hiện ra khi người dùng chọn sai)</label>
+        <textarea id="f-explain" placeholder="Giải thích vì sao đáp án đúng là như vậy..."></textarea>
       </div>
-    </main>
-
-    <!-- bottom bar: live preview, like the macOS app -->
-    <footer class="bottombar">
-      <button class="lp-btn" id="demo-toggle"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.95 2.55L22.5 18.5l-2.55.95L19 22l-.95-2.55L15.5 18.5l2.55-.95z"/></svg></span><span id="t-lp">Live preview</span></button>
-      <span class="cap" id="t-preview-sub">Fire webhooks for many agents with your current settings</span>
+      <div class="row end">
+        <button class="btn ghost sm" onclick="resetForm()">Xóa form</button>
+        <button class="btn primary" id="f-submit" onclick="submitForm()">＋ Thêm câu hỏi</button>
+      </div>
+      <div class="err hidden" id="f-err"></div>
+    </section>
+    <section id="panel-md" class="panel hidden">
+      <div class="md-help">
+        Mỗi câu hỏi bắt đầu bằng dòng tiêu đề <code>#</code>. Đáp án dùng <code>- [ ]</code> (sai) hoặc
+        <code>- [x]</code> (đúng). Dòng bắt đầu bằng <code>&gt;</code> là giải thích.
+        <pre class="fmt"># Thủ đô của Việt Nam là gì?
+- [ ] TP. Hồ Chí Minh
+- [x] Hà Nội
+- [ ] Đà Nẵng
+- [ ] Huế
+> Hà Nội là thủ đô của Việt Nam từ năm 1010.</pre>
+      </div>
+      <textarea id="md-input" class="md" placeholder="Dán câu hỏi theo định dạng Markdown ở trên..."></textarea>
+      <div class="row" style="margin-top:12px">
+        <span class="hint" id="md-status">Chưa phân tích.</span>
+        <span class="spacer"></span>
+        <button class="btn ghost sm" onclick="previewMarkdown()">Xem trước</button>
+        <button class="btn primary sm" onclick="importMarkdown()">＋ Thêm tất cả</button>
+      </div>
+      <div class="err hidden" id="md-err"></div>
+      <div id="md-preview" class="qlist" style="margin-top:14px"></div>
+    </section>
+    <div class="toolbar">
+      <span class="count-pill" id="count">0 câu hỏi</span>
       <span class="spacer"></span>
-    </footer>
-    </div><!-- /main-col -->
-
-    <!-- Live-preview demo panel (the macOS SettingsDemoPanel) -->
-    <aside id="demo-panel" hidden>
-      <div class="demo-main">
-        <div class="demo-head">
-          <span class="demo-title"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.95 2.55L22.5 18.5l-2.55.95L19 22l-.95-2.55L15.5 18.5l2.55-.95z"/></svg></span><span id="t-dp-title">Live preview</span></span>
-          <span class="mood-chip" id="demo-mood" data-mood="idle">Idle</span>
-          <button class="demo-close" id="demo-close">✕</button>
-        </div>
-        <div class="demo-stage">
-          <div class="stage-inner">
-            <div id="demo-bubble" class="bubble" hidden></div>
-            <canvas id="demo-pet" width="160" height="180"></canvas>
-          </div>
-        </div>
-        <div class="demo-scroll">
-          <div class="demo-sec" id="t-dp-quick">Quick scenarios</div>
-          <div class="demo-actions">
-            <button id="dp-spawn">Spawn 3 working</button>
-            <button id="dp-finish">Finish all</button>
-            <button id="dp-clear" class="danger">Clear all</button>
-          </div>
-          <div class="demo-sec demo-sec-row"><span id="t-dp-active">Active webhooks</span><span class="dim" id="dp-count"></span></div>
-          <div id="dp-list"></div>
-          <div class="cap" id="dp-empty">No webhooks yet. Add one from the right →</div>
-        </div>
-      </div>
-      <div class="demo-add">
-        <div class="demo-head"><span class="demo-title"><span class="ui-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span id="t-dp-add">Add webhook</span></span></div>
-        <div class="demo-scroll" id="dp-agents"></div>
-        <div class="cap" style="padding: 0 14px 12px" id="t-dp-hint">Add agents here, then change each webhook's state or delete it in the list on the left.</div>
-      </div>
-    </aside>
-    </div><!-- /shell -->
-
-    <!-- Browse pets , searchable gallery to download pets (mac BrowsePetsView) -->
-    <div class="modal-backdrop" id="browse-modal" hidden>
-      <div class="modal browse">
-        <div class="modal-head"><b id="t-bw-title">Browse pets</b><button class="linklike" id="browse-done">Done</button></div>
-        <input id="bw-search" type="text" placeholder="Search pets" autocomplete="off" />
-        <span class="seg bw-seg" id="bw-cat">
-          <button data-v="all" class="sel" id="t-bw-all">All</button>
-          <button data-v="character" id="t-bw-char">Characters</button>
-          <button data-v="creature" id="t-bw-crea">Creatures</button>
-          <button data-v="object" id="t-bw-obj">Objects</button>
-        </span>
-        <div id="bw-status" class="cap center" style="padding: 18px 0">Loading pets…</div>
-        <div id="bw-list" class="bw-list"></div>
-      </div>
+      <button class="btn primary sm" onclick="saveNow()">💾 Lưu</button>
+      <button class="btn ghost sm" onclick="exportMarkdown()">⬇︎ Markdown</button>
+      <button class="btn ghost sm" onclick="exportJSON()">⬇︎ JSON</button>
+      <button class="btn ghost sm danger" onclick="clearAll()">Xóa tất cả</button>
     </div>
+    <div id="qlist" class="qlist"></div>
+  </section>
 
-    <!-- Create pet (mac CreatePetView) -->
-    <div class="modal-backdrop" id="create-modal" hidden>
-      <div class="modal">
-        <div class="modal-head"><b id="t-cr-title">Create pet</b><button class="linklike" id="create-cancel">Cancel</button></div>
-        <div class="cr-field"><label class="cap" id="t-cr-name">Name</label><input id="cr-name" type="text" autocomplete="off" /></div>
-        <div class="cr-field"><label class="cap" id="t-cr-desc">Description</label><input id="cr-desc" type="text" autocomplete="off" /></div>
-        <div class="cr-field">
-          <label class="cap" id="t-cr-sheet">Spritesheet</label>
-          <div class="cr-file"><span class="cap" id="cr-file-name">No image selected</span>
-            <button class="mini" id="cr-choose">Choose image…</button></div>
-          <div class="cap" id="t-cr-hint">Use the same 8×9 transparent spritesheet format as downloaded pets.</div>
-        </div>
-        <div class="cap" id="cr-error" style="color: var(--red)" hidden></div>
-        <button class="prominent" id="cr-create" disabled>Create</button>
-      </div>
-    </div>
+  <!-- ABOUT TAB -->
+  <section id="main-about" class="panel hidden">
+    <p class="about"><b>Quiz Pet</b> — một pet nhỏ trên màn hình đố bạn câu hỏi trắc nghiệm.
+    Trả lời đúng pet vui và cảm ơn; sai thì pet thất vọng và hiện giải thích.</p>
+    <p class="about">Câu hỏi lưu cục bộ trên máy bạn, hoạt động hoàn toàn offline.</p>
+    <p class="about">Chuột phải vào pet để mở lại cửa sổ cài đặt này bất cứ lúc nào.</p>
+  </section>
+</div>
 
-    <!-- Icon picker (mac IconPickerPopover): brand logos + symbol set -->
-    <div class="modal-backdrop" id="icon-modal" hidden>
-      <div class="modal">
-        <div class="modal-head"><b id="icon-modal-title">Icon</b><button class="linklike" id="icon-done">Done</button></div>
-        <div class="cap" id="t-ic-brand">Brand logos</div>
-        <div class="icon-grid" id="ic-brands"></div>
-        <div class="cap" id="t-ic-sym" style="margin-top:10px">Symbols</div>
-        <div class="icon-grid" id="ic-symbols"></div>
-        <div class="row center" style="margin-top:8px"><button class="linklike" id="icon-reset">Reset to default</button></div>
-      </div>
-    </div>
+<div id="toast" class="toast"></div>
 
-    <!-- Codex one-time trust help (the macOS CodexHelpView) -->
-    <div class="modal-backdrop" id="codex-help" hidden>
-      <div class="modal">
-        <h3 id="t-cdx-title">How to connect Codex</h3>
-        <ol class="cap" style="margin: 10px 0 14px 18px; line-height: 1.8">
-          <li id="t-cdx-1">Install the hook here (it also enables hooks in Codex's config.toml).</li>
-          <li id="t-cdx-2">Open Codex CLI and run /hooks.</li>
-          <li id="t-cdx-3">Press t to Trust the AgentPet hook.</li>
-          <li id="t-cdx-4">Quit and reopen Codex (both the CLI and the desktop app).</li>
-        </ol>
-        <button class="prominent" id="codex-help-close">OK</button>
-      </div>
-    </div>
+<script src="/quiz-core.js"></script>
+<script src="/quiz-store.js"></script>
+<script src="/pet-sprite.js"></script>
+<script>
+"use strict";
+const { uid, parseMarkdown, validateQuestion, toMarkdown } = QuizCore;
+const PET_KEY = "quiz_selected_pet";
+let questions = [];
+let editingId = null;
 
-    <script type="module" src="/src/settings.ts"></script>
-  </body>
+function persist() { QuizStore.saveQuestions(questions); }
+
+// ---------- main tabs ----------
+function switchMain(t) {
+  ["pet", "quiz", "about"].forEach(k => {
+    document.getElementById("mtab-" + k).classList.toggle("active", k === t);
+    document.getElementById("main-" + k).classList.toggle("hidden", k !== t);
+  });
+}
+
+// ---------- builder: form tabs ----------
+function switchTab(t) {
+  document.getElementById("tab-form").classList.toggle("active", t === "form");
+  document.getElementById("tab-md").classList.toggle("active", t === "md");
+  document.getElementById("panel-form").classList.toggle("hidden", t !== "form");
+  document.getElementById("panel-md").classList.toggle("hidden", t !== "md");
+}
+
+const NUM_ANSWERS = 4;
+function buildAnswerRows() {
+  const box = document.getElementById("f-answers");
+  box.innerHTML = "";
+  for (let i = 0; i < NUM_ANSWERS; i++) {
+    const row = document.createElement("div");
+    row.className = "answer-row";
+    row.innerHTML =
+      '<span class="answer-badge">' + String.fromCharCode(65 + i) + '</span>' +
+      '<input type="text" placeholder="Đáp án ' + String.fromCharCode(65 + i) + '" />' +
+      '<label class="tick"><input type="checkbox" /> đúng</label>';
+    const cb = row.querySelector('input[type=checkbox]');
+    cb.addEventListener("change", () => row.classList.toggle("correct", cb.checked));
+    box.appendChild(row);
+  }
+}
+function readForm() {
+  const text = document.getElementById("f-question").value.trim();
+  const options = [];
+  document.querySelectorAll('#f-answers .answer-row').forEach((row) => {
+    options.push({
+      text: row.querySelector('input[type=text]').value.trim(),
+      correct: row.querySelector('input[type=checkbox]').checked,
+    });
+  });
+  return { text, options, explanation: document.getElementById("f-explain").value.trim() };
+}
+function resetForm() {
+  editingId = null;
+  document.getElementById("f-question").value = "";
+  document.getElementById("f-explain").value = "";
+  document.getElementById("f-err").classList.add("hidden");
+  document.getElementById("f-submit").textContent = "＋ Thêm câu hỏi";
+  buildAnswerRows();
+}
+function submitForm() {
+  const data = readForm();
+  const errs = validateQuestion(data);
+  const errBox = document.getElementById("f-err");
+  if (errs.length) { errBox.textContent = errs.join("\n"); errBox.classList.remove("hidden"); return; }
+  errBox.classList.add("hidden");
+  data.options = data.options.filter(o => o.text && o.text.trim());
+  if (editingId) {
+    const i = questions.findIndex(q => q.id === editingId);
+    if (i >= 0) questions[i] = { ...questions[i], ...data };
+    toast("Đã cập nhật câu hỏi");
+  } else {
+    questions.push({ id: uid(), ...data });
+    toast("Đã thêm câu hỏi");
+  }
+  persist(); renderList(); resetForm();
+}
+function editQuestion(id) {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  editingId = id; switchTab("form");
+  document.getElementById("f-question").value = q.text;
+  document.getElementById("f-explain").value = q.explanation || "";
+  buildAnswerRows();
+  const rows = document.querySelectorAll('#f-answers .answer-row');
+  q.options.slice(0, NUM_ANSWERS).forEach((o, i) => {
+    rows[i].querySelector('input[type=text]').value = o.text;
+    const cb = rows[i].querySelector('input[type=checkbox]');
+    cb.checked = !!o.correct; rows[i].classList.toggle("correct", !!o.correct);
+  });
+  document.getElementById("f-submit").textContent = "✓ Lưu thay đổi";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function deleteQuestion(id) { questions = questions.filter(q => q.id !== id); persist(); renderList(); toast("Đã xóa"); }
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function qCardHTML(q, n, withActions) {
+  const opts = q.options.map(o =>
+    '<div class="opt ' + (o.correct ? "correct" : "") + '"><span class="mk">' + (o.correct ? "✓" : "○") + '</span>' + esc(o.text) + '</div>').join("");
+  const expl = q.explanation ? '<div class="expl">💡 ' + esc(q.explanation) + '</div>' : "";
+  const acts = withActions
+    ? '<div class="acts"><button class="btn ghost sm" onclick="editQuestion(\'' + q.id + '\')">Sửa</button>' +
+      '<button class="btn ghost sm danger" onclick="deleteQuestion(\'' + q.id + '\')">Xóa</button></div>' : "";
+  return '<div class="qcard"><div class="qtop"><span class="num">' + n + '</span><span class="qtext">' + esc(q.text) + '</span>' + acts +
+    '</div><div class="opts">' + opts + '</div>' + expl + '</div>';
+}
+function renderList() {
+  const box = document.getElementById("qlist");
+  document.getElementById("count").textContent = questions.length + " câu hỏi";
+  box.innerHTML = questions.length
+    ? questions.map((q, i) => qCardHTML(q, i + 1, true)).join("")
+    : '<div class="empty">Chưa có câu hỏi nào. Thêm bằng Form hoặc Markdown.</div>';
+}
+
+let mdParsed = [];
+function previewMarkdown() {
+  mdParsed = parseMarkdown(document.getElementById("md-input").value);
+  const errBox = document.getElementById("md-err");
+  const bad = mdParsed.map((q, i) => ({ i, e: validateQuestion(q) })).filter(x => x.e.length);
+  if (bad.length) { errBox.textContent = bad.map(b => "Câu " + (b.i + 1) + ":\n" + b.e.join("\n")).join("\n"); errBox.classList.remove("hidden"); }
+  else errBox.classList.add("hidden");
+  document.getElementById("md-status").textContent = "Phân tích được " + mdParsed.length + " câu hỏi" + (bad.length ? " (" + bad.length + " lỗi)" : "");
+  document.getElementById("md-preview").innerHTML = mdParsed.map((q, i) => qCardHTML(q, i + 1, false)).join("");
+}
+function importMarkdown() {
+  previewMarkdown();
+  const valid = mdParsed.filter(q => validateQuestion(q).length === 0);
+  if (!valid.length) { toast("Không có câu hỏi hợp lệ"); return; }
+  valid.forEach(q => questions.push({ id: uid(), text: q.text, options: q.options, explanation: q.explanation }));
+  persist(); renderList();
+  document.getElementById("md-input").value = "";
+  document.getElementById("md-preview").innerHTML = "";
+  document.getElementById("md-status").textContent = "Chưa phân tích.";
+  toast("Đã thêm " + valid.length + " câu hỏi");
+  switchTab("form");
+}
+function download(name, content, type) {
+  const blob = new Blob([content], { type });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exportMarkdown() { if (!questions.length) return toast("Chưa có câu hỏi"); download("quiz.md", toMarkdown(questions), "text/markdown"); }
+function exportJSON() { if (!questions.length) return toast("Chưa có câu hỏi"); download("quiz.json", JSON.stringify(questions, null, 2), "application/json"); }
+function clearAll() {
+  if (!questions.length) return;
+  if (!confirm("Xóa toàn bộ " + questions.length + " câu hỏi?")) return;
+  questions = []; persist(); renderList(); toast("Đã xóa tất cả");
+}
+async function saveNow() { await QuizStore.saveQuestions(questions); toast("Đã lưu " + questions.length + " câu hỏi"); }
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+// ---------- Pet tab ----------
+let pets = [];
+function notifyPet(slug) {
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.quiz) {
+    window.webkit.messageHandlers.quiz.postMessage({ action: "petChanged", slug });
+  } else if (window.__TAURI__ && window.__TAURI__.event) {
+    try { window.__TAURI__.event.emit("pet-changed", slug); } catch (e) {}
+  }
+}
+function selectPet(slug) {
+  localStorage.setItem(PET_KEY, slug);
+  notifyPet(slug);
+  renderPets();
+  toast("Đã đổi pet");
+}
+function toggleAnim(on) {
+  localStorage.setItem("quiz_anim", on ? "1" : "0");
+  // reload the overlay pet so the change takes effect
+  notifyPet(localStorage.getItem(PET_KEY) || (pets[0] && pets[0].slug) || "");
+}
+function setPetSize(px) {
+  px = Number(px);
+  localStorage.setItem("quiz_pet_size", String(px));
+  const slider = document.getElementById("petSize"); if (slider) slider.value = px;
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.quiz) {
+    window.webkit.messageHandlers.quiz.postMessage({ action: "petResize", size: px });
+  } else if (window.__TAURI__ && window.__TAURI__.event) {
+    try { window.__TAURI__.event.emit("pet-resized", px); } catch (e) {}
+  }
+}
+let petRenderToken = 0;
+async function renderPets() {
+  const grid = document.getElementById("petgrid");
+  const selected = localStorage.getItem(PET_KEY) || (pets[0] && pets[0].slug);
+  const q = (document.getElementById("petSearch")?.value || "").trim().toLowerCase();
+  const list = q ? pets.filter(p => (p.name || p.slug).toLowerCase().includes(q) || p.slug.includes(q)) : pets;
+  const cnt = document.getElementById("petCount"); if (cnt) cnt.textContent = list.length;
+  grid.innerHTML = "";
+  const token = ++petRenderToken; // cancel stale renders when the query changes
+  for (const p of list) {
+    const card = document.createElement("div");
+    card.className = "petcard" + (p.slug === selected ? " selected" : "");
+    card.onclick = () => selectPet(p.slug);
+    card.innerHTML = '<canvas width="168" height="168"></canvas>' +
+      '<div class="nm">' + esc(p.name || p.slug) + '</div>' +
+      '<div class="sel">' + (p.slug === selected ? "Đang chọn" : "") + '</div>';
+    grid.appendChild(card);
+    // Static first-frame preview (animate:false) so 50+ pets don't spawn 50+ timers.
+    try {
+      const pack = await PetSprite.loadPack("/pets/" + p.slug + "/spritesheet.webp");
+      if (token !== petRenderToken) return; // a newer search superseded this one
+      PetSprite.createPlayer(card.querySelector("canvas"), pack, { fps: 4, animate: false });
+    } catch (e) {}
+  }
+}
+async function loadPets() {
+  try { pets = await (await fetch("/pets/pets.json")).json(); } catch (e) { pets = []; }
+}
+
+// ---------- Init ----------
+(async function init() {
+  buildAnswerRows();
+  renderList();
+  document.getElementById("animToggle").checked = localStorage.getItem("quiz_anim") !== "0";
+  document.getElementById("petSize").value = localStorage.getItem("quiz_pet_size") || "132";
+  await loadPets();
+  await renderPets();
+  const qs = await QuizStore.loadQuestions();
+  questions = Array.isArray(qs) ? qs : [];
+  renderList();
+})();
+</script>
+</body>
 </html>

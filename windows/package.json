@@ -1,24 +1,19 @@
 {
-  "name": "agentpet-windows",
+  "name": "Quiz-windows",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "AgentPet for Windows , a desktop pet that watches your AI coding agents.",
+  "description": "Quiz Builder for Windows , soạn câu hỏi trắc nghiệm.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "vite build",
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.0.0",
-    "@tauri-apps/plugin-autostart": "^2.0.0",
-    "@tauri-apps/plugin-notification": "^2.0.0",
-    "@tauri-apps/plugin-updater": "^2.0.0",
-    "@tauri-apps/plugin-process": "^2.0.0"
+    "@tauri-apps/api": "^2.0.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0",
-    "typescript": "^5.6.0",
     "vite": "^5.4.0"
   }
 }

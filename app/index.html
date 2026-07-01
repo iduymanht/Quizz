@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Builder</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #171a2b;
+    --panel-2: #1e2236;
+    --border: #2a2f47;
+    --text: #e7e9f3;
+    --muted: #9aa0bd;
+    --brand: #4da3ff;
+    --brand-2: #8fd0ff;
+    --ok: #34d399;
+    --ok-bg: rgba(52, 211, 153, .12);
+    --danger: #ff6b6b;
+    --radius: 12px;
+    --shadow: 0 8px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #1b2140 0%, var(--bg) 55%);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 22px 18px 60px; }
+  header.app { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  header.app .logo {
+    width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; font-size: 22px; box-shadow: var(--shadow);
+  }
+  header.app h1 { font-size: 19px; margin: 0; }
+  header.app p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+  .tabs { display: flex; gap: 6px; background: var(--panel); padding: 6px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 18px; }
+  .tabs button {
+    flex: 1; appearance: none; border: 0; cursor: pointer; padding: 10px 14px; border-radius: 8px;
+    background: transparent; color: var(--muted); font-size: 14px; font-weight: 600; transition: .15s;
+  }
+  .tabs button.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .field { margin-bottom: 14px; }
+  label.lbl { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  textarea, input[type=text] {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; resize: vertical;
+  }
+  textarea:focus, input[type=text]:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(77, 163, 255,.2); }
+  textarea.q { min-height: 60px; }
+
+  .answers { display: grid; gap: 8px; }
+  .answer-row {
+    display: flex; align-items: center; gap: 10px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 9px; padding: 6px 10px 6px 6px;
+  }
+  .answer-row.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .answer-row .tick {
+    display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 4px 8px;
+    border-radius: 7px; cursor: pointer; user-select: none; font-size: 12px; color: var(--muted);
+  }
+  .answer-row.correct .tick { color: var(--ok); font-weight: 700; }
+  .answer-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--ok); cursor: pointer; }
+  .answer-row input[type=text] { border: 0; background: transparent; padding: 8px 4px; }
+  .answer-row input[type=text]:focus { box-shadow: none; }
+  .answer-badge { width: 24px; text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; }
+
+  .btn {
+    appearance: none; border: 0; cursor: pointer; border-radius: 9px; padding: 11px 16px;
+    font-size: 14px; font-weight: 700; transition: .15s;
+  }
+  .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--brand); }
+  .btn.sm { padding: 7px 11px; font-size: 12px; }
+  .btn.danger { color: var(--danger); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .row.end { justify-content: flex-end; }
+  .spacer { flex: 1; }
+
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0 10px; flex-wrap: wrap; }
+  .count-pill { background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+
+  .qlist { display: grid; gap: 10px; margin-top: 4px; }
+  .qcard { background: var(--panel-2); border: 1px solid var(--border); border-radius: 11px; padding: 13px 14px; }
+  .qcard .qtop { display: flex; gap: 10px; align-items: flex-start; }
+  .qcard .num { width: 24px; height: 24px; flex: none; border-radius: 7px; background: var(--brand); color: white; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .qcard .qtext { font-weight: 600; flex: 1; }
+  .qcard .opts { margin: 9px 0 0 34px; display: grid; gap: 4px; }
+  .qcard .opt { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .qcard .opt.correct { color: var(--ok); font-weight: 600; }
+  .qcard .opt .mk { width: 16px; }
+  .qcard .expl { margin: 9px 0 0 34px; font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--border); padding-left: 10px; }
+  .qcard .acts { display: flex; gap: 6px; }
+
+  .empty { text-align: center; color: var(--muted); padding: 26px; font-size: 13.5px; }
+  .md-help { background: var(--panel-2); border: 1px dashed var(--border); border-radius: 9px; padding: 12px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .md-help code, code.inline { background: #0c0e18; padding: 1px 6px; border-radius: 5px; color: #cfd3f2; font-size: 12px; }
+  pre.fmt { background: #0c0e18; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow:auto; color: #cfd3f2; font-size: 12px; margin: 8px 0 0; }
+  textarea.md { min-height: 240px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel-2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: 10px; box-shadow: var(--shadow); opacity: 0; transition: .25s; pointer-events: none; font-size: 13px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hidden { display: none !important; }
+  .err { color: var(--danger); font-size: 12.5px; margin-top: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="logo">📝</div>
+    <div>
+      <h1>Quiz Builder</h1>
+      <p>Soạn câu hỏi trắc nghiệm — nhập từng câu hoặc hàng loạt bằng Markdown</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="tab-form" class="active" onclick="switchTab('form')">✏️ Form</button>
+    <button id="tab-md" onclick="switchTab('md')">⌨️ Markdown</button>
+  </div>
+
+  <!-- FORM TAB -->
+  <section id="panel-form" class="panel">
+    <div class="field">
+      <label class="lbl">Câu hỏi</label>
+      <textarea id="f-question" class="q" placeholder="Nhập nội dung câu hỏi..."></textarea>
+    </div>
+    <div class="field">
+      <label class="lbl">Đáp án (tích ô bên phải để đánh dấu đáp án đúng)</label>
+      <div class="answers" id="f-answers"></div>
+    </div>
+    <div class="field">
+      <label class="lbl">Giải thích (hiện ra khi người dùng chọn sai)</label>
+      <textarea id="f-explain" placeholder="Giải thích vì sao đáp án đúng là như vậy..."></textarea>
+    </div>
+    <div class="row end">
+      <button class="btn ghost sm" onclick="resetForm()">Xóa form</button>
+      <button class="btn primary" id="f-submit" onclick="submitForm()">＋ Thêm câu hỏi</button>
+    </div>
+    <div class="err hidden" id="f-err"></div>
+  </section>
+
+  <!-- MARKDOWN TAB -->
+  <section id="panel-md" class="panel hidden">
+    <div class="md-help">
+      Mỗi câu hỏi bắt đầu bằng dòng tiêu đề <code>#</code>. Đáp án dùng <code>- [ ]</code> (sai) hoặc
+      <code>- [x]</code> (đúng — có thể nhiều đáp án đúng). Dòng bắt đầu bằng <code>&gt;</code> là giải thích.
+      <pre class="fmt"># Thủ đô của Việt Nam là gì?
+- [ ] TP. Hồ Chí Minh
+- [x] Hà Nội
+- [ ] Đà Nẵng
+- [ ] Huế
+> Hà Nội là thủ đô của Việt Nam từ năm 1010 (thời Lý).
+
+# 2 + 2 bằng mấy?
+- [ ] 3
+- [x] 4
+- [ ] 5
+- [ ] 22
+> Phép cộng cơ bản: 2 + 2 = 4.</pre>
+    </div>
+    <textarea id="md-input" class="md" placeholder="Dán câu hỏi theo định dạng Markdown ở trên..."></textarea>
+    <div class="row" style="margin-top:12px">
+      <span class="hint" id="md-status">Chưa phân tích.</span>
+      <span class="spacer"></span>
+      <button class="btn ghost sm" onclick="previewMarkdown()">Xem trước</button>
+      <button class="btn primary sm" onclick="importMarkdown()">＋ Thêm tất cả vào danh sách</button>
+    </div>
+    <div class="err hidden" id="md-err"></div>
+    <div id="md-preview" class="qlist" style="margin-top:14px"></div>
+  </section>
+
+  <!-- QUESTION LIST -->
+  <div class="toolbar">
+    <span class="count-pill" id="count">0 câu hỏi</span>
+    <span class="spacer"></span>
+    <button class="btn primary sm" onclick="saveNow()">💾 Lưu</button>
+    <button class="btn ghost sm" onclick="exportMarkdown()">⬇︎ Xuất Markdown</button>
+    <button class="btn ghost sm" onclick="exportJSON()">⬇︎ Xuất JSON</button>
+    <button class="btn ghost sm danger" onclick="clearAll()">Xóa tất cả</button>
+  </div>
+  <div id="qlist" class="qlist"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="quiz-core.js"></script>
+<script src="quiz-store.js"></script>
+<script>
+// ---------- Data model ----------
+// Question: { id, text, options: [{text, correct}], explanation }
+// Pure logic (parseMarkdown / validateQuestion / toMarkdown / uid) lives in quiz-core.js
+// Durable file persistence (save/load via native bridge) lives in quiz-store.js
+const { uid, parseMarkdown, validateQuestion, toMarkdown } = QuizCore;
+let questions = [];
+let editingId = null;
+
+// Writes to the durable store (native file + localStorage cache).
+function persist() { QuizStore.saveQuestions(questions); }
+
+// ---------- UI: tabs ----------
+function switchTab(t) {
+  document.getElementById("tab-form").classList.toggle("active", t === "form");
+  document.getElementById("tab-md").classList.toggle("active", t === "md");
+  document.getElementById("panel-form").classList.toggle("hidden", t !== "form");
+  document.getElementById("panel-md").classList.toggle("hidden", t !== "md");
+}
+
+// ---------- UI: form ----------
+const NUM_ANSWERS = 4;
+function buildAnswerRows() {
+  const box = document.getElementById("f-answers");
+  box.innerHTML = "";
+  for (let i = 0; i < NUM_ANSWERS; i++) {
+    const row = document.createElement("div");
+    row.className = "answer-row";
+    row.innerHTML =
+      '<span class="answer-badge">' + String.fromCharCode(65 + i) + '</span>' +
+      '<input type="text" data-ans="' + i + '" placeholder="Đáp án ' + String.fromCharCode(65 + i) + '" />' +
+      '<label class="tick"><input type="checkbox" data-correct="' + i + '" /> đúng</label>';
+    const cb = row.querySelector('input[type=checkbox]');
+    cb.addEventListener("change", () => row.classList.toggle("correct", cb.checked));
+    box.appendChild(row);
+  }
+}
+function readForm() {
+  const text = document.getElementById("f-question").value.trim();
+  const options = [];
+  document.querySelectorAll('#f-answers .answer-row').forEach((row, i) => {
+    const t = row.querySelector('input[type=text]').value.trim();
+    const c = row.querySelector('input[type=checkbox]').checked;
+    options.push({ text: t, correct: c });
+  });
+  const explanation = document.getElementById("f-explain").value.trim();
+  return { text, options, explanation };
+}
+function resetForm() {
+  editingId = null;
+  document.getElementById("f-question").value = "";
+  document.getElementById("f-explain").value = "";
+  document.getElementById("f-err").classList.add("hidden");
+  document.getElementById("f-submit").textContent = "＋ Thêm câu hỏi";
+  buildAnswerRows();
+}
+function submitForm() {
+  const data = readForm();
+  const errs = validateQuestion(data);
+  const errBox = document.getElementById("f-err");
+  if (errs.length) { errBox.textContent = errs.join("\n"); errBox.classList.remove("hidden"); return; }
+  errBox.classList.add("hidden");
+  data.options = data.options.filter(o => o.text && o.text.trim());
+  if (editingId) {
+    const idx = questions.findIndex(q => q.id === editingId);
+    if (idx >= 0) questions[idx] = { ...questions[idx], ...data };
+    toast("Đã cập nhật câu hỏi");
+  } else {
+    questions.push({ id: uid(), ...data });
+    toast("Đã thêm câu hỏi");
+  }
+  persist(); renderList(); resetForm();
+}
+function editQuestion(id) {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  editingId = id;
+  switchTab("form");
+  document.getElementById("f-question").value = q.text;
+  document.getElementById("f-explain").value = q.explanation || "";
+  buildAnswerRows();
+  const rows = document.querySelectorAll('#f-answers .answer-row');
+  q.options.slice(0, NUM_ANSWERS).forEach((o, i) => {
+    rows[i].querySelector('input[type=text]').value = o.text;
+    const cb = rows[i].querySelector('input[type=checkbox]');
+    cb.checked = !!o.correct;
+    rows[i].classList.toggle("correct", !!o.correct);
+  });
+  document.getElementById("f-submit").textContent = "✓ Lưu thay đổi";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function deleteQuestion(id) {
+  questions = questions.filter(q => q.id !== id);
+  persist(); renderList(); toast("Đã xóa");
+}
+
+// ---------- UI: render list ----------
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function qCardHTML(q, n, withActions) {
+  const opts = q.options.map(o =>
+    '<div class="opt ' + (o.correct ? "correct" : "") + '"><span class="mk">' + (o.correct ? "✓" : "○") + '</span>' + esc(o.text) + '</div>'
+  ).join("");
+  const expl = q.explanation ? '<div class="expl">💡 ' + esc(q.explanation) + '</div>' : "";
+  const acts = withActions
+    ? '<div class="acts"><button class="btn ghost sm" onclick="editQuestion(\'' + q.id + '\')">Sửa</button>' +
+      '<button class="btn ghost sm danger" onclick="deleteQuestion(\'' + q.id + '\')">Xóa</button></div>'
+    : "";
+  return '<div class="qcard"><div class="qtop"><span class="num">' + n + '</span>' +
+    '<span class="qtext">' + esc(q.text) + '</span>' + acts + '</div>' +
+    '<div class="opts">' + opts + '</div>' + expl + '</div>';
+}
+function renderList() {
+  const box = document.getElementById("qlist");
+  document.getElementById("count").textContent = questions.length + " câu hỏi";
+  if (!questions.length) { box.innerHTML = '<div class="empty">Chưa có câu hỏi nào. Thêm câu hỏi bằng tab Form hoặc Markdown.</div>'; return; }
+  box.innerHTML = questions.map((q, i) => qCardHTML(q, i + 1, true)).join("");
+}
+
+// ---------- UI: markdown ----------
+let mdParsed = [];
+function previewMarkdown() {
+  const md = document.getElementById("md-input").value;
+  mdParsed = parseMarkdown(md);
+  const errBox = document.getElementById("md-err");
+  const prev = document.getElementById("md-preview");
+  const bad = mdParsed.map((q, i) => ({ i, e: validateQuestion(q) })).filter(x => x.e.length);
+  if (bad.length) {
+    errBox.textContent = bad.map(b => "Câu " + (b.i + 1) + ":\n" + b.e.join("\n")).join("\n");
+    errBox.classList.remove("hidden");
+  } else { errBox.classList.add("hidden"); }
+  document.getElementById("md-status").textContent = "Phân tích được " + mdParsed.length + " câu hỏi" + (bad.length ? " (" + bad.length + " câu có lỗi)" : "");
+  prev.innerHTML = mdParsed.length ? mdParsed.map((q, i) => qCardHTML(q, i + 1, false)).join("") : "";
+}
+function importMarkdown() {
+  previewMarkdown();
+  const valid = mdParsed.filter(q => validateQuestion(q).length === 0);
+  if (!valid.length) { toast("Không có câu hỏi hợp lệ để thêm"); return; }
+  valid.forEach(q => questions.push({ id: uid(), text: q.text, options: q.options, explanation: q.explanation }));
+  persist(); renderList();
+  document.getElementById("md-input").value = "";
+  document.getElementById("md-preview").innerHTML = "";
+  document.getElementById("md-status").textContent = "Chưa phân tích.";
+  toast("Đã thêm " + valid.length + " câu hỏi");
+  switchTab("form");
+}
+
+// ---------- Export / clear ----------
+function download(name, content, type) {
+  const blob = new Blob([content], { type: type });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exportMarkdown() {
+  if (!questions.length) { toast("Chưa có câu hỏi"); return; }
+  download("quiz.md", toMarkdown(questions), "text/markdown");
+}
+function exportJSON() {
+  if (!questions.length) { toast("Chưa có câu hỏi"); return; }
+  download("quiz.json", JSON.stringify(questions, null, 2), "application/json");
+}
+function clearAll() {
+  if (!questions.length) return;
+  if (!confirm("Xóa toàn bộ " + questions.length + " câu hỏi?")) return;
+  questions = []; persist(); renderList(); toast("Đã xóa tất cả");
+}
+async function saveNow() {
+  await QuizStore.saveQuestions(questions);
+  toast("Đã lưu " + questions.length + " câu hỏi");
+}
+
+// ---------- Toast ----------
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+// ---------- Init ----------
+buildAnswerRows();
+renderList();
+// Load saved questions from the durable store, then render.
+QuizStore.loadQuestions().then((qs) => {
+  questions = Array.isArray(qs) ? qs : [];
+  renderList();
+});
+
+// Expose pure functions for testing (Node/headless)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { parseMarkdown, validateQuestion, toMarkdown };
+}
+</script>
+</body>
+</html>

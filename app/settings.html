@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz — Cài đặt</title>
+<style>
+  :root {
+    --bg: #0f1220; --panel: #171a2b; --panel-2: #1e2236; --border: #2a2f47;
+    --text: #e7e9f3; --muted: #9aa0bd; --brand: #4da3ff; --brand-2: #8fd0ff;
+    --ok: #34d399; --ok-bg: rgba(52,211,153,.12); --danger: #ff6b6b;
+    --radius: 12px; --shadow: 0 8px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #1b2140 0%, var(--bg) 55%);
+    color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 20px 18px 60px; }
+  header.app { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header.app .logo { width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; font-size: 22px; box-shadow: var(--shadow); }
+  header.app h1 { font-size: 19px; margin: 0; }
+  header.app p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+  .tabs { display: flex; gap: 6px; background: var(--panel); padding: 6px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 18px; }
+  .tabs button { flex: 1; appearance: none; border: 0; cursor: pointer; padding: 10px 14px; border-radius: 8px;
+    background: transparent; color: var(--muted); font-size: 14px; font-weight: 600; transition: .15s; }
+  .tabs button.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .field { margin-bottom: 14px; }
+  label.lbl { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  textarea, input[type=text] { width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; resize: vertical; }
+  textarea:focus, input[type=text]:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(77, 163, 255,.2); }
+  textarea.q { min-height: 60px; }
+
+  .answers { display: grid; gap: 8px; }
+  .answer-row { display: flex; align-items: center; gap: 10px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 9px; padding: 6px 10px 6px 6px; }
+  .answer-row.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .answer-row .tick { display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 4px 8px;
+    border-radius: 7px; cursor: pointer; user-select: none; font-size: 12px; color: var(--muted); }
+  .answer-row.correct .tick { color: var(--ok); font-weight: 700; }
+  .answer-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--ok); cursor: pointer; }
+  .answer-row input[type=text] { border: 0; background: transparent; padding: 8px 4px; }
+  .answer-row input[type=text]:focus { box-shadow: none; }
+  .answer-badge { width: 24px; text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; }
+
+  .btn { appearance: none; border: 0; cursor: pointer; border-radius: 9px; padding: 11px 16px; font-size: 14px; font-weight: 700; transition: .15s; }
+  .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--brand); }
+  .btn.sm { padding: 7px 11px; font-size: 12px; }
+  .btn.danger { color: var(--danger); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .row.end { justify-content: flex-end; }
+  .spacer { flex: 1; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0 10px; flex-wrap: wrap; }
+  .count-pill { background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+
+  .qlist { display: grid; gap: 10px; margin-top: 4px; }
+  .qcard { background: var(--panel-2); border: 1px solid var(--border); border-radius: 11px; padding: 13px 14px; }
+  .qcard .qtop { display: flex; gap: 10px; align-items: flex-start; }
+  .qcard .num { width: 24px; height: 24px; flex: none; border-radius: 7px; background: var(--brand); color: white; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .qcard .qtext { font-weight: 600; flex: 1; }
+  .qcard .opts { margin: 9px 0 0 34px; display: grid; gap: 4px; }
+  .qcard .opt { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .qcard .opt.correct { color: var(--ok); font-weight: 600; }
+  .qcard .opt .mk { width: 16px; }
+  .qcard .expl { margin: 9px 0 0 34px; font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--border); padding-left: 10px; }
+  .qcard .acts { display: flex; gap: 6px; }
+  .empty { text-align: center; color: var(--muted); padding: 26px; font-size: 13.5px; }
+
+  .md-help { background: var(--panel-2); border: 1px dashed var(--border); border-radius: 9px; padding: 12px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .md-help code { background: #0c0e18; padding: 1px 6px; border-radius: 5px; color: #cfd3f2; font-size: 12px; }
+  pre.fmt { background: #0c0e18; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow:auto; color: #cfd3f2; font-size: 12px; margin: 8px 0 0; }
+  textarea.md { min-height: 220px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+
+  /* Pet tab */
+  .petgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+  .petcard { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center;
+    cursor: pointer; transition: .12s; }
+  .petcard:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .petcard.selected { border-color: var(--ok); box-shadow: 0 0 0 2px rgba(52,211,153,.25); }
+  .petcard canvas { width: 84px; height: 84px; }
+  .petcard .nm { margin-top: 6px; font-size: 13px; font-weight: 700; }
+  .petcard .sel { font-size: 11px; color: var(--ok); font-weight: 700; height: 14px; }
+  .switchrow { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; }
+  .switchrow .desc { font-size: 12.5px; color: var(--muted); }
+  .about { font-size: 13.5px; color: var(--muted); }
+  .about b { color: var(--text); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel-2);
+    border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: 10px; box-shadow: var(--shadow);
+    opacity: 0; transition: .25s; pointer-events: none; font-size: 13px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hidden { display: none !important; }
+  .err { color: var(--danger); font-size: 12.5px; margin-top: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="logo">⚙️</div>
+    <div>
+      <h1>Cài đặt Quiz Pet</h1>
+      <p>Chọn pet, tùy chọn hiển thị, và soạn câu hỏi</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="mtab-pet" class="active" onclick="switchMain('pet')">🐾 Pet</button>
+    <button id="mtab-quiz" onclick="switchMain('quiz')">✏️ Soạn câu hỏi</button>
+    <button id="mtab-about" onclick="switchMain('about')">ℹ️ Giới thiệu</button>
+  </div>
+
+  <!-- PET TAB -->
+  <section id="main-pet" class="panel">
+    <div class="field">
+      <label class="lbl">Chọn pet hiển thị trên màn hình (<span id="petCount">0</span> pet)</label>
+      <input type="text" id="petSearch" placeholder="Tìm pet theo tên…" oninput="renderPets()" style="margin-bottom:12px" />
+      <div class="petgrid" id="petgrid"></div>
+    </div>
+    <div class="switchrow">
+      <div><b>Kích thước pet</b><div class="desc">Phóng to / thu nhỏ pet trên màn hình.</div></div>
+      <div class="row">
+        <button class="btn ghost sm" onclick="setPetSize(96)">S</button>
+        <button class="btn ghost sm" onclick="setPetSize(132)">M</button>
+        <button class="btn ghost sm" onclick="setPetSize(180)">L</button>
+        <input type="range" id="petSize" min="80" max="220" step="4" oninput="setPetSize(this.value)" style="width:140px" />
+      </div>
+    </div>
+    <div class="switchrow">
+      <div><b>Hoạt ảnh pet</b><div class="desc">Bật/tắt chuyển động khung hình của pet.</div></div>
+      <label class="tick"><input type="checkbox" id="animToggle" onchange="toggleAnim(this.checked)" /> Bật</label>
+    </div>
+  </section>
+
+  <!-- QUIZ (BUILDER) TAB -->
+  <section id="main-quiz" class="hidden">
+    <div class="tabs">
+      <button id="tab-form" class="active" onclick="switchTab('form')">Form</button>
+      <button id="tab-md" onclick="switchTab('md')">Markdown</button>
+    </div>
+    <section id="panel-form" class="panel">
+      <div class="field">
+        <label class="lbl">Câu hỏi</label>
+        <textarea id="f-question" class="q" placeholder="Nhập nội dung câu hỏi..."></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl">Đáp án (tích ô bên phải để đánh dấu đáp án đúng)</label>
+        <div class="answers" id="f-answers"></div>
+      </div>
+      <div class="field">
+        <label class="lbl">Giải thích (hiện ra khi người dùng chọn sai)</label>
+        <textarea id="f-explain" placeholder="Giải thích vì sao đáp án đúng là như vậy..."></textarea>
+      </div>
+      <div class="row end">
+        <button class="btn ghost sm" onclick="resetForm()">Xóa form</button>
+        <button class="btn primary" id="f-submit" onclick="submitForm()">＋ Thêm câu hỏi</button>
+      </div>
+      <div class="err hidden" id="f-err"></div>
+    </section>
+    <section id="panel-md" class="panel hidden">
+      <div class="md-help">
+        Mỗi câu hỏi bắt đầu bằng dòng tiêu đề <code>#</code>. Đáp án dùng <code>- [ ]</code> (sai) hoặc
+        <code>- [x]</code> (đúng). Dòng bắt đầu bằng <code>&gt;</code> là giải thích.
+        <pre class="fmt"># Thủ đô của Việt Nam là gì?
+- [ ] TP. Hồ Chí Minh
+- [x] Hà Nội
+- [ ] Đà Nẵng
+- [ ] Huế
+> Hà Nội là thủ đô của Việt Nam từ năm 1010.</pre>
+      </div>
+      <textarea id="md-input" class="md" placeholder="Dán câu hỏi theo định dạng Markdown ở trên..."></textarea>
+      <div class="row" style="margin-top:12px">
+        <span class="hint" id="md-status">Chưa phân tích.</span>
+        <span class="spacer"></span>
+        <button class="btn ghost sm" onclick="previewMarkdown()">Xem trước</button>
+        <button class="btn primary sm" onclick="importMarkdown()">＋ Thêm tất cả</button>
+      </div>
+      <div class="err hidden" id="md-err"></div>
+      <div id="md-preview" class="qlist" style="margin-top:14px"></div>
+    </section>
+    <div class="toolbar">
+      <span class="count-pill" id="count">0 câu hỏi</span>
+      <span class="spacer"></span>
+      <button class="btn primary sm" onclick="saveNow()">💾 Lưu</button>
+      <button class="btn ghost sm" onclick="exportMarkdown()">⬇︎ Markdown</button>
+      <button class="btn ghost sm" onclick="exportJSON()">⬇︎ JSON</button>
+      <button class="btn ghost sm danger" onclick="clearAll()">Xóa tất cả</button>
+    </div>
+    <div id="qlist" class="qlist"></div>
+  </section>
+
+  <!-- ABOUT TAB -->
+  <section id="main-about" class="panel hidden">
+    <p class="about"><b>Quiz Pet</b> — một pet nhỏ trên màn hình đố bạn câu hỏi trắc nghiệm.
+    Trả lời đúng pet vui và cảm ơn; sai thì pet thất vọng và hiện giải thích.</p>
+    <p class="about">Câu hỏi lưu cục bộ trên máy bạn, hoạt động hoàn toàn offline.</p>
+    <p class="about">Chuột phải vào pet để mở lại cửa sổ cài đặt này bất cứ lúc nào.</p>
+  </section>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="quiz-core.js"></script>
+<script src="quiz-store.js"></script>
+<script src="pet-sprite.js"></script>
+<script>
+"use strict";
+const { uid, parseMarkdown, validateQuestion, toMarkdown } = QuizCore;
+const PET_KEY = "quiz_selected_pet";
+let questions = [];
+let editingId = null;
+
+function persist() { QuizStore.saveQuestions(questions); }
+
+// ---------- main tabs ----------
+function switchMain(t) {
+  ["pet", "quiz", "about"].forEach(k => {
+    document.getElementById("mtab-" + k).classList.toggle("active", k === t);
+    document.getElementById("main-" + k).classList.toggle("hidden", k !== t);
+  });
+}
+
+// ---------- builder: form tabs ----------
+function switchTab(t) {
+  document.getElementById("tab-form").classList.toggle("active", t === "form");
+  document.getElementById("tab-md").classList.toggle("active", t === "md");
+  document.getElementById("panel-form").classList.toggle("hidden", t !== "form");
+  document.getElementById("panel-md").classList.toggle("hidden", t !== "md");
+}
+
+const NUM_ANSWERS = 4;
+function buildAnswerRows() {
+  const box = document.getElementById("f-answers");
+  box.innerHTML = "";
+  for (let i = 0; i < NUM_ANSWERS; i++) {
+    const row = document.createElement("div");
+    row.className = "answer-row";
+    row.innerHTML =
+      '<span class="answer-badge">' + String.fromCharCode(65 + i) + '</span>' +
+      '<input type="text" placeholder="Đáp án ' + String.fromCharCode(65 + i) + '" />' +
+      '<label class="tick"><input type="checkbox" /> đúng</label>';
+    const cb = row.querySelector('input[type=checkbox]');
+    cb.addEventListener("change", () => row.classList.toggle("correct", cb.checked));
+    box.appendChild(row);
+  }
+}
+function readForm() {
+  const text = document.getElementById("f-question").value.trim();
+  const options = [];
+  document.querySelectorAll('#f-answers .answer-row').forEach((row) => {
+    options.push({
+      text: row.querySelector('input[type=text]').value.trim(),
+      correct: row.querySelector('input[type=checkbox]').checked,
+    });
+  });
+  return { text, options, explanation: document.getElementById("f-explain").value.trim() };
+}
+function resetForm() {
+  editingId = null;
+  document.getElementById("f-question").value = "";
+  document.getElementById("f-explain").value = "";
+  document.getElementById("f-err").classList.add("hidden");
+  document.getElementById("f-submit").textContent = "＋ Thêm câu hỏi";
+  buildAnswerRows();
+}
+function submitForm() {
+  const data = readForm();
+  const errs = validateQuestion(data);
+  const errBox = document.getElementById("f-err");
+  if (errs.length) { errBox.textContent = errs.join("\n"); errBox.classList.remove("hidden"); return; }
+  errBox.classList.add("hidden");
+  data.options = data.options.filter(o => o.text && o.text.trim());
+  if (editingId) {
+    const i = questions.findIndex(q => q.id === editingId);
+    if (i >= 0) questions[i] = { ...questions[i], ...data };
+    toast("Đã cập nhật câu hỏi");
+  } else {
+    questions.push({ id: uid(), ...data });
+    toast("Đã thêm câu hỏi");
+  }
+  persist(); renderList(); resetForm();
+}
+function editQuestion(id) {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  editingId = id; switchTab("form");
+  document.getElementById("f-question").value = q.text;
+  document.getElementById("f-explain").value = q.explanation || "";
+  buildAnswerRows();
+  const rows = document.querySelectorAll('#f-answers .answer-row');
+  q.options.slice(0, NUM_ANSWERS).forEach((o, i) => {
+    rows[i].querySelector('input[type=text]').value = o.text;
+    const cb = rows[i].querySelector('input[type=checkbox]');
+    cb.checked = !!o.correct; rows[i].classList.toggle("correct", !!o.correct);
+  });
+  document.getElementById("f-submit").textContent = "✓ Lưu thay đổi";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function deleteQuestion(id) { questions = questions.filter(q => q.id !== id); persist(); renderList(); toast("Đã xóa"); }
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function qCardHTML(q, n, withActions) {
+  const opts = q.options.map(o =>
+    '<div class="opt ' + (o.correct ? "correct" : "") + '"><span class="mk">' + (o.correct ? "✓" : "○") + '</span>' + esc(o.text) + '</div>').join("");
+  const expl = q.explanation ? '<div class="expl">💡 ' + esc(q.explanation) + '</div>' : "";
+  const acts = withActions
+    ? '<div class="acts"><button class="btn ghost sm" onclick="editQuestion(\'' + q.id + '\')">Sửa</button>' +
+      '<button class="btn ghost sm danger" onclick="deleteQuestion(\'' + q.id + '\')">Xóa</button></div>' : "";
+  return '<div class="qcard"><div class="qtop"><span class="num">' + n + '</span><span class="qtext">' + esc(q.text) + '</span>' + acts +
+    '</div><div class="opts">' + opts + '</div>' + expl + '</div>';
+}
+function renderList() {
+  const box = document.getElementById("qlist");
+  document.getElementById("count").textContent = questions.length + " câu hỏi";
+  box.innerHTML = questions.length
+    ? questions.map((q, i) => qCardHTML(q, i + 1, true)).join("")
+    : '<div class="empty">Chưa có câu hỏi nào. Thêm bằng Form hoặc Markdown.</div>';
+}
+
+let mdParsed = [];
+function previewMarkdown() {
+  mdParsed = parseMarkdown(document.getElementById("md-input").value);
+  const errBox = document.getElementById("md-err");
+  const bad = mdParsed.map((q, i) => ({ i, e: validateQuestion(q) })).filter(x => x.e.length);
+  if (bad.length) { errBox.textContent = bad.map(b => "Câu " + (b.i + 1) + ":\n" + b.e.join("\n")).join("\n"); errBox.classList.remove("hidden"); }
+  else errBox.classList.add("hidden");
+  document.getElementById("md-status").textContent = "Phân tích được " + mdParsed.length + " câu hỏi" + (bad.length ? " (" + bad.length + " lỗi)" : "");
+  document.getElementById("md-preview").innerHTML = mdParsed.map((q, i) => qCardHTML(q, i + 1, false)).join("");
+}
+function importMarkdown() {
+  previewMarkdown();
+  const valid = mdParsed.filter(q => validateQuestion(q).length === 0);
+  if (!valid.length) { toast("Không có câu hỏi hợp lệ"); return; }
+  valid.forEach(q => questions.push({ id: uid(), text: q.text, options: q.options, explanation: q.explanation }));
+  persist(); renderList();
+  document.getElementById("md-input").value = "";
+  document.getElementById("md-preview").innerHTML = "";
+  document.getElementById("md-status").textContent = "Chưa phân tích.";
+  toast("Đã thêm " + valid.length + " câu hỏi");
+  switchTab("form");
+}
+function download(name, content, type) {
+  const blob = new Blob([content], { type });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exportMarkdown() { if (!questions.length) return toast("Chưa có câu hỏi"); download("quiz.md", toMarkdown(questions), "text/markdown"); }
+function exportJSON() { if (!questions.length) return toast("Chưa có câu hỏi"); download("quiz.json", JSON.stringify(questions, null, 2), "application/json"); }
+function clearAll() {
+  if (!questions.length) return;
+  if (!confirm("Xóa toàn bộ " + questions.length + " câu hỏi?")) return;
+  questions = []; persist(); renderList(); toast("Đã xóa tất cả");
+}
+async function saveNow() { await QuizStore.saveQuestions(questions); toast("Đã lưu " + questions.length + " câu hỏi"); }
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+// ---------- Pet tab ----------
+let pets = [];
+function notifyPet(slug) {
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.quiz) {
+    window.webkit.messageHandlers.quiz.postMessage({ action: "petChanged", slug });
+  } else if (window.__TAURI__ && window.__TAURI__.event) {
+    try { window.__TAURI__.event.emit("pet-changed", slug); } catch (e) {}
+  }
+}
+function selectPet(slug) {
+  localStorage.setItem(PET_KEY, slug);
+  notifyPet(slug);
+  renderPets();
+  toast("Đã đổi pet");
+}
+function toggleAnim(on) {
+  localStorage.setItem("quiz_anim", on ? "1" : "0");
+  // reload the overlay pet so the change takes effect
+  notifyPet(localStorage.getItem(PET_KEY) || (pets[0] && pets[0].slug) || "");
+}
+function setPetSize(px) {
+  px = Number(px);
+  localStorage.setItem("quiz_pet_size", String(px));
+  const slider = document.getElementById("petSize"); if (slider) slider.value = px;
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.quiz) {
+    window.webkit.messageHandlers.quiz.postMessage({ action: "petResize", size: px });
+  } else if (window.__TAURI__ && window.__TAURI__.event) {
+    try { window.__TAURI__.event.emit("pet-resized", px); } catch (e) {}
+  }
+}
+let petRenderToken = 0;
+async function renderPets() {
+  const grid = document.getElementById("petgrid");
+  const selected = localStorage.getItem(PET_KEY) || (pets[0] && pets[0].slug);
+  const q = (document.getElementById("petSearch")?.value || "").trim().toLowerCase();
+  const list = q ? pets.filter(p => (p.name || p.slug).toLowerCase().includes(q) || p.slug.includes(q)) : pets;
+  const cnt = document.getElementById("petCount"); if (cnt) cnt.textContent = list.length;
+  grid.innerHTML = "";
+  const token = ++petRenderToken; // cancel stale renders when the query changes
+  for (const p of list) {
+    const card = document.createElement("div");
+    card.className = "petcard" + (p.slug === selected ? " selected" : "");
+    card.onclick = () => selectPet(p.slug);
+    card.innerHTML = '<canvas width="168" height="168"></canvas>' +
+      '<div class="nm">' + esc(p.name || p.slug) + '</div>' +
+      '<div class="sel">' + (p.slug === selected ? "Đang chọn" : "") + '</div>';
+    grid.appendChild(card);
+    // Static first-frame preview (animate:false) so 50+ pets don't spawn 50+ timers.
+    try {
+      const pack = await PetSprite.loadPack("pets/" + p.slug + "/spritesheet.webp");
+      if (token !== petRenderToken) return; // a newer search superseded this one
+      PetSprite.createPlayer(card.querySelector("canvas"), pack, { fps: 4, animate: false });
+    } catch (e) {}
+  }
+}
+async function loadPets() {
+  try { pets = await (await fetch("pets/pets.json")).json(); } catch (e) { pets = []; }
+}
+
+// ---------- Init ----------
+(async function init() {
+  buildAnswerRows();
+  renderList();
+  document.getElementById("animToggle").checked = localStorage.getItem("quiz_anim") !== "0";
+  document.getElementById("petSize").value = localStorage.getItem("quiz_pet_size") || "132";
+  await loadPets();
+  await renderPets();
+  const qs = await QuizStore.loadQuestions();
+  questions = Array.isArray(qs) ? qs : [];
+  renderList();
+})();
+</script>
+</body>
+</html>

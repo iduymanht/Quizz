@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import QuizCore
 
 /// Native macOS-style settings: a preferences-style toolbar of tabs over
 /// grouped forms (dark).
@@ -13,7 +13,7 @@ struct SetupView: View {
     /// panel can slide in on the right. Provided by SettingsWindowController.
     var onResize: (CGFloat) -> Void = { _ in }
 
-    enum Tab { case general, pet, care, bubble, history, about }
+    enum Tab { case general, pet, quiz, care, bubble, history, about }
     @State private var tab: Tab = .general
     @State private var demoOpen = false
 
@@ -46,28 +46,32 @@ struct SetupView: View {
     }
 
     private var settingsColumn: some View {
-        VStack(spacing: 0) {
-            tabBar
+        HStack(spacing: 0) {
+            tabBar            // vertical sidebar on the left
             Divider()
-            Group {
-                switch tab {
-                case .general:
-                    GeneralTab(model: model, pet: pet)
-                case .pet:
-                    PetTab(pet: pet, imagePets: imagePets, model: model, selectedPack: selectedPack)
-                case .care:
-                    CareTabView()
-                case .bubble:
-                    BubbleSettingsView()
-                case .history:
-                    HistoryTabView()
-                case .about:
-                    AboutTab()
+            VStack(spacing: 0) {
+                Group {
+                    switch tab {
+                    case .general:
+                        GeneralTab(model: model, pet: pet)
+                    case .pet:
+                        PetTab(pet: pet, imagePets: imagePets, model: model, selectedPack: selectedPack)
+                    case .quiz:
+                        QuizTab()
+                    case .care:
+                        CareTabView()
+                    case .bubble:
+                        BubbleSettingsView()
+                    case .history:
+                        HistoryTabView()
+                    case .about:
+                        AboutTab()
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Divider()
+                bottomBar
             }
-            .frame(maxHeight: .infinity)
-            Divider()
-            bottomBar
         }
     }
 
@@ -86,15 +90,17 @@ struct SetupView: View {
     }
 
     private var tabBar: some View {
-        HStack(spacing: 8) {
+        VStack(spacing: 8) {
             TabButton(icon: "gearshape.fill", label: "General", selected: tab == .general) { tab = .general }
             TabButton(icon: "pawprint.fill", label: "Pet", selected: tab == .pet) { tab = .pet }
+            TabButton(icon: "questionmark.circle.fill", label: "Quiz", selected: tab == .quiz) { tab = .quiz }
             TabButton(icon: "fork.knife", label: "Care", selected: tab == .care) { tab = .care }
             TabButton(icon: "bubble.left.and.bubble.right.fill", label: "Bubble", selected: tab == .bubble) { tab = .bubble }
             TabButton(icon: "clock.arrow.circlepath", label: "History", selected: tab == .history) { tab = .history }
-            TabButton(icon: "heart.fill", label: "About", selected: tab == .about) { tab = .about }
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: 92)
+        .frame(maxHeight: .infinity)
         .padding(.vertical, 10)
     }
 }
@@ -129,11 +135,11 @@ private struct AboutTab: View {
     @Environment(\.openURL) private var openURL
     @State private var showCoffee = false
 
-    private let repo = URL(string: "https://github.com/ntd4996/agentpet")!
-    private let profile = URL(string: "https://github.com/ntd4996")!
-    private let coffee = URL(string: "https://buymeacoffee.com/ntd4996")!
+    private let repo = URL(string: "https://github.com/iduymanht/Quiz")!
+    private let profile = URL(string: "https://github.com/iduymanht")!
+    private let coffee = URL(string: "https://buymeacoffee.com/iduymanht")!
     private let discord = URL(string: "https://discord.gg/kzFJKsZav")!
-    private let homepage = URL(string: "https://agentpet.thenightwatcher.online")!
+    private let homepage = URL(string: "https://Quiz.thenightwatcher.online")!
 
     var body: some View {
         Form {
@@ -141,11 +147,11 @@ private struct AboutTab: View {
                 VStack(spacing: 10) {
                     Image(systemName: "pawprint.fill")
                         .font(.system(size: 40)).foregroundStyle(Color.systemAccent)
-                    Text("AgentPet").font(.title2.bold())
+                    Text("Quiz").font(.title2.bold())
                     Text("A desktop pet that watches your AI coding agents.")
                         .font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     Link(destination: homepage) {
-                        Label("agentpet.thenightwatcher.online", systemImage: "globe")
+                        Label("Quiz.thenightwatcher.online", systemImage: "globe")
                             .font(.callout)
                     }
                     .padding(.top, 2)
@@ -175,15 +181,15 @@ private struct AboutTab: View {
                 }
                 .controlSize(.large)
             } footer: {
-                Text("If AgentPet helps your workflow, a star means a lot. Thank you!")
+                Text("If Quiz helps your workflow, a star means a lot. Thank you!")
             }
 
             Section("Author") {
                 Link(destination: profile) {
-                    Label("Nguyễn Thành Đạt (@ntd4996)", systemImage: "person.crop.circle")
+                    Label("billy (@billy)", systemImage: "person.crop.circle")
                 }
                 Link(destination: repo) {
-                    Label("github.com/ntd4996/agentpet", systemImage: "chevron.left.forwardslash.chevron.right")
+                    Label("github.com/iduymanht/Quiz", systemImage: "chevron.left.forwardslash.chevron.right")
                 }
             }
 
@@ -265,7 +271,7 @@ private struct GeneralTab: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Launch at login")
-                        Text("AgentPet starts automatically when you sign in.")
+                        Text("Quiz starts automatically when you sign in.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -395,7 +401,7 @@ private struct GeneralTab: View {
             }
 
             Section {
-                Button("Quit AgentPet") { NSApplication.shared.terminate(nil) }
+                Button("Quit Quiz") { NSApplication.shared.terminate(nil) }
             }
         }
         .formStyle(.grouped)
@@ -421,7 +427,7 @@ private struct GeneralTab: View {
 
     private var notificationDetail: String {
         switch model.notificationState {
-        case .unavailable: return NSLocalizedString("Available once installed as AgentPet.app", comment: "")
+        case .unavailable: return NSLocalizedString("Available once installed as Quiz.app", comment: "")
         case .denied: return NSLocalizedString("Turn on in System Settings to get alerts", comment: "")
         case .enabled: return model.notificationsEnabled
             ? NSLocalizedString("Alerts when an agent finishes or needs input", comment: "")
@@ -1005,7 +1011,7 @@ private struct AnimationPicker: View {
 
 // MARK: - Codex connection help
 
-/// Explains the one-time `/hooks` trust step Codex requires before AgentPet's
+/// Explains the one-time `/hooks` trust step Codex requires before Quiz's
 /// hook runs (Codex blocks unknown command hooks for security). Other agents
 /// need no such step.
 private struct CodexHelpView: View {
@@ -1029,7 +1035,7 @@ private struct CodexHelpView: View {
                 Spacer()
             }
 
-            Text("The hook is installed. Codex blocks unknown command hooks until you trust them once , a Codex security feature, not an AgentPet bug. Do this one time:")
+            Text("The hook is installed. Codex blocks unknown command hooks until you trust them once , a Codex security feature, not an Quiz bug. Do this one time:")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 

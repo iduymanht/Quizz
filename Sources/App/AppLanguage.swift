@@ -21,7 +21,12 @@ private extension Bundle {
     /// `code == nil` follows the system language.
     static func ap_setLanguage(_ code: String?) {
         _ = ap_swizzleOnce
-        let path = code.flatMap { Bundle.main.path(forResource: $0, ofType: "lproj") }
+        // .lproj live in the SwiftPM resource bundle (Bundle.module); fall back to
+        // Bundle.main for a traditional .app bundle build.
+        let path = code.flatMap {
+            Bundle.main.path(forResource: $0, ofType: "lproj")
+                ?? Bundle.module.path(forResource: $0, ofType: "lproj")
+        }
         objc_setAssociatedObject(Bundle.main, &ap_bundleKey, path, .OBJC_ASSOCIATION_RETAIN)
     }
 }
@@ -49,7 +54,7 @@ final class AppLanguage: ObservableObject {
         }
     }
 
-    private static let key = "agentpet.appLanguage"
+    private static let key = "Quiz.appLanguage"
 
     @Published var lang: Lang {
         didSet {

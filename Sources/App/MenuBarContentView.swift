@@ -1,6 +1,6 @@
 import SwiftUI
 import AppKit
-import AgentPetCore
+import QuizCore
 
 /// Rich menu bar popover: a blurred dark card with an arrow pointing at the
 /// status item, a live agent list, and a footer bar.
@@ -47,7 +47,7 @@ struct MenuContentView: View {
                 .frame(width: 28, height: 28)
                 .overlay(Image(systemName: "pawprint.fill").font(.system(size: 13)).foregroundStyle(.white))
             VStack(alignment: .leading, spacing: 1) {
-                Text("AgentPet").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
+                Text("Quiz").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
                 Text(subtitle).font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
             }
             Spacer()

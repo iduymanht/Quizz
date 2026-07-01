@@ -1,7 +1,7 @@
 import AppKit
 import Foundation
 @preconcurrency import UserNotifications
-import AgentPetCore
+import QuizCore
 
 /// Backs the onboarding/Settings window: notification permission status and
 /// per-agent hook install state, with the actions to change them.
@@ -56,7 +56,7 @@ final class SettingsModel: ObservableObject {
     /// touches our own hook entries.
     func migrateInstalledHooksIfNeeded() {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        let key = "agentpet.hookMigration.\(version)"
+        let key = "Quiz.hookMigration.\(version)"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
         for agent in agents where agent.isSupported {
@@ -91,7 +91,7 @@ final class SettingsModel: ObservableObject {
                         guard let inner = group["hooks"] as? [[String: Any]] else { continue }
                         for entry in inner {
                             if let cmd = entry["command"] as? String,
-                               cmd.contains("agentpet") && cmd.contains("hook"),
+                               cmd.contains("Quiz") && cmd.contains("hook"),
                                !cmd.hasPrefix(expectedCommand) {
                                 return true
                             }
@@ -109,7 +109,7 @@ final class SettingsModel: ObservableObject {
     }
 
     private func hookCommand(for kind: AgentKind) -> String {
-        let path = Bundle.main.executablePath ?? CommandLine.arguments.first ?? "agentpet"
+        let path = Bundle.main.executablePath ?? CommandLine.arguments.first ?? "Quiz"
         return "\"\(path)\" hook --agent \(kind.rawValue)"
     }
 
@@ -140,7 +140,7 @@ final class SettingsModel: ObservableObject {
         }
     }
 
-    /// Opens System Settings to AgentPet's notification pane (used when denied).
+    /// Opens System Settings to Quiz's notification pane (used when denied).
     func openSystemNotificationSettings() {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
             NSWorkspace.shared.open(url)

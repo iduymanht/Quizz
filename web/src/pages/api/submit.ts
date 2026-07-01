@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   await notifyTelegram(
     `✨ <b>New pet submission</b> (needs review)\n<b>${tgEscape(name)}</b> · ${tgEscape(kind)}` +
     (description ? `\n${tgEscape(description)}` : "") +
-    `\nby @${tgEscape(user.login)}\nhttps://agentpet.thenightwatcher.online/admin/submissions`
+    `\nby @${tgEscape(user.login)}\nhttps://Quiz.thenightwatcher.online/admin/submissions`
   );
 
   return json({ ok: true, id, slug });

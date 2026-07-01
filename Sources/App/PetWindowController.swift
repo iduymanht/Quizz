@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 import Combine
-import AgentPetCore
+import QuizCore
 
 /// Owns the floating pet panels. A registry keyed by group key ("default" or a
 /// project path): each entry is one borderless, always-on-top, draggable
@@ -35,12 +35,18 @@ final class PetWindowController: ObservableObject {
     /// All live pet panels, keyed by spec key.
     private var windows: [String: ManagedPetWindow] = [:]
 
+    /// Screen frame of the primary (default) pet panel, for positioning the
+    /// quiz question card above the pet.
+    var primaryPetFrame: NSRect? {
+        (windows[PetWindowPlanner.defaultKey] ?? windows.values.first)?.panel.frame
+    }
+
     private var sizeCancellable: AnyCancellable?
     private var chatLineCancellable: AnyCancellable?
     private var rightClickMonitor: Any?
     private var screenObserver: Any?
 
-    private static let positionsKey = "agentpet.petPositions"
+    private static let positionsKey = "Quiz.petPositions"
 
     func start() {
         // Create the default ("home") window up front so the pet appears at
@@ -65,15 +71,12 @@ final class PetWindowController: ObservableObject {
             MainActor.assumeIsolated { self?.ensureAllOnScreen() }
         }
 
-        // Right-click a pet to show ITS stats card (info only — controls stay in
-        // the menu bar popover and Settings). Resolve which window via its panel.
+        // Right-click a pet to show ITS HUD (stats + scoreboard tabs).
         rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
             let handled = MainActor.assumeIsolated { () -> Bool in
                 guard let self,
                       let managed = self.windows.values.first(where: { event.window === $0.panel }),
                       let content = managed.panel.contentView else { return false }
-                // Anchor to the whole content rect so the popover sits entirely
-                // outside the window (above it) and never overlaps the pet.
                 self.showStatsPopover(relativeTo: content.bounds, of: content, petID: managed.model.petID)
                 return true
             }
@@ -212,7 +215,7 @@ final class PetWindowController: ObservableObject {
         managed.panel.orderOut(nil)
     }
 
-    // MARK: - Position persistence (agentpet.petPositions)
+    // MARK: - Position persistence (Quiz.petPositions)
 
     private func loadPositions() -> [String: [Double]] {
         guard let data = UserDefaults.standard.data(forKey: Self.positionsKey),
@@ -252,7 +255,7 @@ final class PetWindowController: ObservableObject {
         let popover = NSPopover()
         popover.behavior = .transient
         popover.animates = true
-        popover.contentViewController = NSHostingController(rootView: PetStatsView(petID: petID))
+        popover.contentViewController = NSHostingController(rootView: PetHUDView(petID: petID))
         statsPopover = popover
         // Prefer above the pet; AppKit flips to below only if there's no room.
         // In a flipped content view "above" is the minY edge.

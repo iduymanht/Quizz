@@ -7,7 +7,7 @@ export function adminLogins(): string[] {
   let raw = "";
   try { const e = (env as any)?.ADMIN_LOGINS; if (e) raw = String(e); } catch {}
   if (!raw) raw = (import.meta as any).env?.ADMIN_LOGINS ?? "";
-  if (!raw) raw = "ntd4996";
+  if (!raw) raw = "iduymanht";
   return raw.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
 }
 

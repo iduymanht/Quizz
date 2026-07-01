@@ -9,9 +9,17 @@ DerivedData/
 xcuserdata/
 *.moved-aside
 
-# Swift Package Manager
+# Swift Package Manager (build + release/debug outputs)
 .build/
 .swiftpm/
+release/
+Release/
+
+# Windows / Tauri build artifacts
+windows/dist/
+windows/node_modules/
+windows/src-tauri/target/
+windows/src-tauri/gen/
 
 # Brainstorm scratch
 .superpowers/

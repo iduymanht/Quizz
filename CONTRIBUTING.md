@@ -1,26 +1,26 @@
-# Contributing to AgentPet
+# Contributing to Quiz
 
-Thanks for your interest in improving AgentPet! Contributions of all sizes are welcome.
+Thanks for your interest in improving Quiz! Contributions of all sizes are welcome.
 
 ## Getting started
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/iduymanht/Quiz.git
+cd Quiz
 swift build          # build
 swift test           # run the test suite
-./scripts/build-app.sh release   # produce AgentPet.app
-open build/AgentPet.app
+./scripts/build-app.sh release   # produce Quiz.app
+open build/Quiz.app
 ```
 
 Requires macOS 13+ and a recent Swift toolchain (Swift 6 / Xcode 15+).
 
 ## Project layout
 
-- `Sources/AgentPetCore/` — pure, testable core: session state, event model, hook
+- `Sources/QuizCore/` — pure, testable core: session state, event model, hook
   parsing/installing, the Unix-socket server. No AppKit/SwiftUI here.
 - `Sources/App/` — the macOS app: menu bar, floating pet, Settings, controllers.
-- `Tests/AgentPetCoreTests/` — unit tests for the core.
+- `Tests/QuizCoreTests/` — unit tests for the core.
 - `scripts/` — app packaging and asset generation.
 
 The split keeps logic (Core) independent of UI so it stays unit-testable.
@@ -28,13 +28,13 @@ The split keeps logic (Core) independent of UI so it stays unit-testable.
 ## Guidelines
 
 - Keep changes focused; match the surrounding style.
-- Add or update tests in `AgentPetCore` for any behavior change.
+- Add or update tests in `QuizCore` for any behavior change.
 - Run `swift test` before opening a PR; CI must stay green.
 - Conventional commit messages (`feat:`, `fix:`, `docs:`, `refactor:`...).
 
 ## Pets
 
-AgentPet bundles no pet art. Pets use the open Codex pet-pack format
+Quiz bundles no pet art. Pets use the open Codex pet-pack format
 (`pet.json` + an 8×9 spritesheet) and are added at runtime via Browse or import.
 Please do not commit pet assets to this repository.
 

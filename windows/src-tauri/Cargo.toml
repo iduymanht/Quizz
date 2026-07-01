@@ -1,28 +1,21 @@
 [package]
-name = "agentpet"
+name = "quiz"
 version = "0.1.2"
-description = "AgentPet for Windows"
-authors = ["ntd4996"]
+description = "Quiz for Windows"
+authors = ["billy"]
 edition = "2021"
 
 [lib]
-name = "agentpet_lib"
+name = "quiz_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = ["tray-icon", "macos-private-api"] }
+tauri = { version = "2", features = [] }
 tauri-plugin-autostart = "2"
 tauri-plugin-single-instance = "2"
-tauri-plugin-notification = "2"
-tauri-plugin-updater = "2"
-tauri-plugin-process = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tiny_http = "0.12"
-dirs = "5"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

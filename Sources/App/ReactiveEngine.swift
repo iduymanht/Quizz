@@ -1,9 +1,9 @@
 import Foundation
 import Combine
-import AgentPetCore
+import QuizCore
 
-// Re-export so test target (import agentpet) can use PetHunger without importing AgentPetCore directly
-public typealias PetHunger = AgentPetCore.PetHunger
+// Re-export so test target (import Quiz) can use PetHunger without importing QuizCore directly
+public typealias PetHunger = QuizCore.PetHunger
 
 // MARK: - ReactiveMetric
 

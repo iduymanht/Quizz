@@ -1,4 +1,4 @@
-/* AgentPet , 简体中文 */
+/* Quiz , 简体中文 */
 
 /* Tabs */
 "General" = "通用";
@@ -9,7 +9,7 @@
 /* General / common */
 "Launch" = "启动";
 "Launch at login" = "登录时启动";
-"AgentPet starts automatically when you sign in." = "登录时自动启动 AgentPet。";
+"Quiz starts automatically when you sign in." = "登录时自动启动 Quiz。";
 "Notifications" = "通知";
 "Show chat bubble" = "显示聊天气泡";
 "Messages" = "消息";
@@ -24,7 +24,7 @@
 "Coming soon" = "即将推出";
 "Enable" = "启用";
 "Open Settings" = "打开设置";
-"Quit AgentPet" = "退出 AgentPet";
+"Quit Quiz" = "退出 Quiz";
 "Upload…" = "上传…";
 "Default" = "默认";
 "Working" = "工作中";
@@ -78,7 +78,7 @@
 "Star on GitHub" = "在 GitHub 上点亮 Star";
 "Join the Discord" = "加入 Discord";
 "Buy me a coffee" = "请我喝杯咖啡";
-"If AgentPet helps your workflow, a star means a lot. Thank you!" = "如果 AgentPet 帮到了你，点个 Star 意义非凡。谢谢！";
+"If Quiz helps your workflow, a star means a lot. Thank you!" = "如果 Quiz 帮到了你，点个 Star 意义非凡。谢谢！";
 "Author" = "作者";
 "Version" = "版本";
 "Choose pet" = "选择宠物";
@@ -155,7 +155,7 @@
 "Notifications denied" = "通知被拒绝";
 "Notifications unavailable" = "通知不可用";
 "Enable notifications" = "启用通知";
-"Available once installed as AgentPet.app" = "以 AgentPet.app 安装后可用";
+"Available once installed as Quiz.app" = "以 Quiz.app 安装后可用";
 "Turn on in System Settings to get alerts" = "在系统设置中开启以接收提醒";
 "Alerts when an agent finishes or needs input" = "Agent 完成或需要输入时提醒";
 "Muted, the toggle turns alerts back on" = "已静音，拨动开关重新开启提醒";
@@ -227,7 +227,7 @@
 "Create pet" = "创建宠物";
 "Get alerted when an agent finishes or needs input." = "Agent 完成或需要输入时收到提醒。";
 "Get started" = "开始";
-"Install a hook so AgentPet can see when an agent works, finishes, or needs you." = "安装 hook，让 AgentPet 知道 Agent 何时工作、完成或需要你。";
+"Install a hook so Quiz can see when an agent works, finishes, or needs you." = "安装 hook，让 Quiz 知道 Agent 何时工作、完成或需要你。";
 "Loading pets…" = "正在加载宠物…";
 "Nothing running right now." = "当前没有运行中的 Agent。";
 "Pet info" = "宠物信息";
@@ -236,11 +236,11 @@
 "Sort by agent kind" = "按 Agent 类型排序";
 "Spritesheet" = "精灵图";
 "Use the same 8×9 transparent spritesheet format as downloaded pets." = "使用与下载宠物相同的 8×9 透明精灵图格式。";
-"Welcome to AgentPet" = "欢迎使用 AgentPet";
+"Welcome to Quiz" = "欢迎使用 Quiz";
 
 /* Codex connection help */
 "Connect Codex" = "连接 Codex";
-"The hook is installed. Codex blocks unknown command hooks until you trust them once , a Codex security feature, not an AgentPet bug. Do this one time:" = "Hook 已安装。Codex 会拦截未知的命令 hook，直到你信任一次 , 这是 Codex 的安全机制，并非 AgentPet 的问题。只需操作一次：";
+"The hook is installed. Codex blocks unknown command hooks until you trust them once , a Codex security feature, not an Quiz bug. Do this one time:" = "Hook 已安装。Codex 会拦截未知的命令 hook，直到你信任一次 , 这是 Codex 的安全机制，并非 Quiz 的问题。只需操作一次：";
 "Open Terminal and run: codex (launches the Codex CLI)" = "打开终端并运行：codex（启动 Codex CLI）";
 "Type /hooks and press Enter to list the hooks." = "输入 /hooks 并回车以列出 hook。";
 "Press t to Trust all hooks." = "按 t 键信任所有 hook。";
@@ -360,7 +360,7 @@
 "resets in %dm" = "%d 分钟后重置";
 
 /* Coffee / donate */
-"Thanks for using AgentPet" = "感谢使用 AgentPet";
+"Thanks for using Quiz" = "感谢使用 Quiz";
 "It's free and open source. If it makes your day a little nicer, a coffee is always appreciated, never expected." = "本应用免费开源。如果它让你的一天更愉快，一杯咖啡总是受欢迎的，但绝不强求。";
 "Quét mã bằng app ngân hàng bất kỳ" = "用任意银行 App 扫码";
 "Sao chép số tài khoản" = "复制账号";

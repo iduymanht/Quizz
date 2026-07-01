@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>AgentPet</string>
+	<string>Quiz</string>
 	<key>CFBundleExecutable</key>
-	<string>agentpet</string>
+	<string>Quiz</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.agentpet.app</string>
+	<string>com.Quiz.app</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
@@ -20,24 +20,24 @@
 		<string>zh-Hant</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>AgentPet</string>
+	<string>Quiz</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.10.1</string>
+	<string>1.10.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.agentpet.app</string>
+			<string>com.Quiz.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>agentpet</string>
+				<string>Quiz</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.10.1</string>
+	<string>1.10.0</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
 	<key>LSUIElement</key>
@@ -54,7 +54,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://ntd4996.github.io/agentpet/appcast.xml</string>
+	<string>https://iduymanht.github.io/Quiz/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>2wE8euYD3TUI39c6UhWHbYlhHpXkeM5NiJTJywrm0xQ=</string>
 </dict>

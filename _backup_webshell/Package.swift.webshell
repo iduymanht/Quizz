@@ -1,0 +1,17 @@
+// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "Quiz",
+    platforms: [.macOS(.v13)],
+    targets: [
+        .executableTarget(
+            name: "Quiz",
+            path: "Sources/App",
+            resources: [.copy("Resources/web")]
+        ),
+    ],
+    // Swift 5 language mode: the app uses AppKit/WebKit on the main thread and
+    // does not need Swift 6 strict-concurrency checking.
+    swiftLanguageModes: [.v5]
+)
