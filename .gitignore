@@ -34,3 +34,8 @@ landing/node_modules/
 
 # Claude Code local tooling
 .claude/
+
+# Pet spritesheets — too large for git, host on CDN instead
+data/spritesheets/pets/
+app/pets/
+windows/public/pets/
