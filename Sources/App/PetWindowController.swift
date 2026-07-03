@@ -196,8 +196,16 @@ final class PetWindowController: ObservableObject {
     /// bottom-right anchor shifted left by `index` so windows don't stack.
     private func placeWindow(_ managed: ManagedPetWindow, size: CGSize, index: Int) {
         if let origin = savedPosition(forKey: managed.model.key) {
-            managed.panel.setFrame(NSRect(origin: origin, size: size), display: true, animate: false)
-            return
+            let frame = NSRect(origin: origin, size: size)
+            // Only honour a saved position that still lands on a live screen. A
+            // position saved on an external display that's since been unplugged
+            // would place the pet off-screen and unclickable at launch, because
+            // ensureAllOnScreen only fires on a later display-config change, not
+            // at startup. Fall through to the default anchor in that case.
+            if currentScreen(for: frame) != nil {
+                managed.panel.setFrame(frame, display: true, animate: false)
+                return
+            }
         }
         guard let visible = NSScreen.main?.visibleFrame else { return }
         let step = PetController.shared.petPoint + 40
