@@ -62,35 +62,49 @@ swift build -c release
 The app runs as a **menu‑bar item** (no Dock icon): the pet floats on your
 desktop, and the menu‑bar icon opens Settings / toggles the pet / quits.
 
-### Open as a normal .app (optional)
+### Build a double‑clickable `.app`
 
-`swift build` produces a plain executable, not a double‑clickable `.app`. To make
-one, wrap the release binary in a minimal bundle:
+`swift build` produces a plain executable, not a `.app`. Use the bundled script
+to assemble a proper menu‑bar app — it builds a **universal binary** (Apple
+Silicon + Intel), embeds the icon, localizations, and the Sparkle auto‑update
+framework, and ad‑hoc signs it for local use:
 
 ```bash
-swift build -c release
-APP="Quiz.app/Contents/MacOS"
-mkdir -p "$APP" "Quiz.app/Contents/Resources"
-cp .build/release/Quiz "$APP/Quiz"
-cp -R .build/release/Quiz_Quiz.bundle "Quiz.app/Contents/Resources/" 2>/dev/null || true
-cat > Quiz.app/Contents/Info.plist <<'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>CFBundleName</key><string>Quiz</string>
-  <key>CFBundleDisplayName</key><string>Quiz</string>
-  <key>CFBundleExecutable</key><string>Quiz</string>
-  <key>CFBundleIdentifier</key><string>com.quiz.app</string>
-  <key>CFBundlePackageType</key><string>APPL</string>
-  <key>LSMinimumSystemVersion</key><string>13.0</string>
-  <key>LSUIElement</key><true/>
-  <key>NSPrincipalClass</key><string>NSApplication</string>
-</dict></plist>
-PLIST
-open Quiz.app
+./scripts/build-app.sh          # release build → build/Quiz.app
+./scripts/build-app.sh debug    # debug build, if you need it
 ```
 
-(For distribution you would also code‑sign and notarize the bundle.)
+The result is `build/Quiz.app`. Run it directly with:
+
+```bash
+open build/Quiz.app
+```
+
+### Install on macOS
+
+Copy the app into your Applications folder, then launch it:
+
+```bash
+cp -R build/Quiz.app /Applications/
+open /Applications/Quiz.app
+```
+
+Because the app is **ad‑hoc signed** (not notarized), the first launch is
+blocked by Gatekeeper. Allow it once with either:
+
+- **Right‑click** `Quiz.app` → **Open** → **Open** in the dialog, **or**
+- run `xattr -dr com.apple.quarantine /Applications/Quiz.app` then open it.
+
+Once running, Quiz lives in the **menu bar** (no Dock icon). The pet appears on
+your desktop; the menu‑bar icon opens Settings, toggles the pet, or quits. To
+launch it automatically at login, enable **Open at Login** in Settings.
+
+### Distributable DMG (maintainers)
+
+For a signed + notarized DMG you can hand to other users, see
+[`scripts/release.sh`](scripts/release.sh). It requires an Apple Developer ID
+and a one‑time `xcrun notarytool store-credentials` setup (documented at the top
+of the script).
 
 ## Windows (Tauri)
 
